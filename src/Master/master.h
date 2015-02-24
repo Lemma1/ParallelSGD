@@ -9,11 +9,11 @@
 #define WORKTAG 1
 #define STOPTAG 2
 
-struct masterConfInfo
-{
+struct masterConfInfo {
 	int paramSize;
 	int nIterMax;
-		
+	float confInfo;
+	float learningRate;
 };
 
 void masterFunc ();

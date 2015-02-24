@@ -1,11 +1,32 @@
-#include <mpi.h>
 #include <stdio.h>
+#include <mpi.h>
+#include <math.h>
+#include <algorithm>
 
 #include "master.h"
 #include "sgd.h"
+#include "MasterConfig.h"
 
-void loadConf () {
-    fprintf(stderr, "Load conf failed in file %s at line %d\n", __FILE__, __LINE__);
+void loadConf (masterConfInfo &confInfo) {
+    // int related
+    confInfo.paramSize = getMasterIntConf("parameter size")
+    confInfo.nIterMax  = getMasterIntConf("max iteration number")
+
+    // float related
+    confInfo.learningRate = getMasterDoubleConf("global learning rate")
+    confInfo.initRange = getMasterDoubleConf("parameter init range")
+
+    // string related
+}
+
+void initParams (masterConfInfo confInfo, float *params) {
+    float initMin, initMax;
+    initMin = -confInfo.initRange;
+    initMax = confInfo.initRange;
+    initWidth = initMax - initMin;
+    for (int i=0; i<conf.paramSize; i++) {
+        params[i] = initMin + initWidth * static_cast<float>(rand()) / RAND_MAX;
+    }
 }
 
 void masterFunc () {
@@ -14,10 +35,11 @@ void masterFunc () {
     * Load conf, allocate mem, init params, init solver
     ****************************************************************/
     // Step 1.1: Load configuration
-    // loadConf(); // TODO    
-    // TEMP CODE
-    int paramSize = 1000;
-    float learningRate = 0.01;
+    masterConfInfo confInfo;
+    loadConf(confInfo);
+
+    int paramSize = confInfo.paramSize;
+    float learningRate = confInfo.learningRate;
 	
     // Step 1.2: Get basic MPI info
     int nProc, nSlave;
@@ -29,11 +51,13 @@ void masterFunc () {
     float *grad = new float[paramSize];
 
     // Step 1.4: Initialize params
-    initParams(params); // TODO
+    initParams(confInfo, params, paramSize);
 
     // Step 1.5: Initialize SGD Solver
-    // TODO
     sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
+
+    // Step 1.6: Load cross-validation data
+    // loadData();
 
 	/****************************************************************
     * Step 2: Seed the slaves
