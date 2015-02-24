@@ -6,9 +6,9 @@ int getMasterIntConf(std::string key)
    return confValue; 
 }
 
-double getMasterDoubleConf(std::string key)
+float getMasterDoubleConf(std::string key)
 {
-   double confValue = cf.Value(MasterKey, key);
+   float confValue = cf.Value(MasterKey, key);
    return confValue; 
 }
 

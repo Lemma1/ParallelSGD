@@ -8,7 +8,7 @@ int getSlaveIntConf(std::string key)
 
 double getSlaveDoubleConf(std::string key)
 {
-   double confValue = cf.Value(SlaveKey, key);
+   float confValue = cf.Value(SlaveKey, key);
    return confValue; 
 }
 
