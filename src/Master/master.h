@@ -1,3 +1,6 @@
+#ifndef __MASTER_H__
+#define __MASTER_H__
+
 #include<mpi.h>
 #include<stdio.h>
 
@@ -6,6 +9,15 @@
 #define WORKTAG 1
 #define STOPTAG 2
 
-void masterFunc();
+struct masterConfInfo
+{
+	int paramSize;
+	int nIterMax;
+		
+};
 
-void loadConf();
+void masterFunc ();
+
+void loadConf ();
+
+#endif

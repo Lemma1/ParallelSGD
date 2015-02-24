@@ -14,7 +14,10 @@ void masterFunc () {
     * Load conf, allocate mem, init params, init solver
     ****************************************************************/
     // Step 1.1: Load configuration
-    loadConf(); // TODO
+    // loadConf(); // TODO    
+    // TEMP CODE
+    int paramSize = 1000;
+    float learningRate = 0.01;
 	
     // Step 1.2: Get basic MPI info
     int nProc, nSlave;
@@ -30,6 +33,7 @@ void masterFunc () {
 
     // Step 1.5: Initialize SGD Solver
     // TODO
+    sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
 
 	/****************************************************************
     * Step 2: Seed the slaves
@@ -45,7 +49,7 @@ void masterFunc () {
     /****************************************************************
     * Step 3: Paralleled training
 	* Receive mini-batch grad from *ANY* slave
-    * Update params based received grad    
+    * Update params based received grad
 	* Re-send params to slave to process next mini-batch
 	****************************************************************/
 	
@@ -58,11 +62,7 @@ void masterFunc () {
         nRecv++;
 
     	// Call solver to update params
-    	// SGDSolver.updateParams(params, grad); // TODO
-        // TEMP CODE
-        for (int i = 0; i < paramSize; i++) {
-            params[i] += 0.01 * grad[i];
-        }
+    	sgdSolver->updateParams(params, grad);
 
         // Check recv tag (eg. local new epoch info)
         // if (status.MPI_TAG == SOME_TAG) {}
@@ -81,7 +81,7 @@ void masterFunc () {
         nSend++;
     }
 
-    /****************************************************************	
+    /****************************************************************
 	* Step 4: Stop the slaves
 	****************************************************************/
 	
@@ -94,4 +94,12 @@ void masterFunc () {
     for (int rank = 1; rank < nProc; ++rank) {
         MPI_Send(&rank, 1, MPI_INT, rank, STOPTAG, MPI_COMM_WORLD);
     }
+
+    /****************************************************************
+    * Step 5: deallocate mem and clear things
+    ****************************************************************/    
+    delete sgdSolver;
+
+    delete [] params;
+    delete [] grad;    
 }
