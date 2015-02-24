@@ -15,6 +15,6 @@ static std::string SlaveKey = "Slave";
 
 int getSlaveIntConf(std::string);
 std::string getSlaveStringConf(std::string);
-float getSlaveDoubleConf(std::string);
+float getSlaveFloatConf(std::string);
 
 #endif

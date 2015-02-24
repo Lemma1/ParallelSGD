@@ -5,6 +5,6 @@
 int main() {
     std::cout << getMasterIntConf("number of Slave") << std::endl;
     std::cout << getMasterStringConf("foo") << std::endl;
-    std::cout << getMasterDoubleConf("shit") << std::endl;
+    std::cout << getMasterFloatConf("shit") << std::endl;
     return 0;
 }
