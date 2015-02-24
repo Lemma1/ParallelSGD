@@ -51,7 +51,8 @@ void masterFunc () {
 	
     MPI_Status status;
     // TEMP CODE
-    int nSendMax = 10000; 
+    int nSendMax = 10000;
+    // TEMP while loop condition
     while (nSend < nSendMax) {
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         nRecv++;
