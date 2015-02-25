@@ -31,4 +31,17 @@ public:
 	float computeGrad (float *grad, float *params, float *data, float *label);
 };
 
+class softmax: public modelBase
+{
+public:
+	softmax(int paramSize, int minibatchSize, int classNum);
+	~softmax();
+
+	/* data */
+	int m_nClassNum;
+
+	/* method */
+	float computeGrad (float *grad, float *params, float *data, float *label);
+};
+
 #endif
