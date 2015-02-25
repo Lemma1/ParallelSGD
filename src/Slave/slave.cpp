@@ -16,12 +16,6 @@
 
 
 //random pick the data 
-void indexGen(int bSize, int *index,int dbSize){
-    int i;
-    for(i=0;i<bSize;i++){
-        (index+i)* = i;//TODO  
-    }
-}
 //the main function of slaves
 
 
@@ -46,9 +40,12 @@ void slaveDo(){
     float *grad  = new float[paramSize];
     float *data  = new float[batchSize*paramSize];
     float *label = new float[batchSize];
-    int   *index = new int[batchSize];
+    int   *index = new int[dbSize];
+    int   *pickIndex = new int[batchSize];
     linearReg model = linearReg(paramSize,batchSize);
-
+    for (int i=0;i<dbSize;i++){
+        index[i]=i;
+    }
 
 	//main loop
     while(1){
@@ -63,11 +60,14 @@ void slaveDo(){
 		
         /*step 4: request for data*/
         
-        indexGen(batchSize,index,dbSize);
-        dataRequest(batchSize,index,data,label);//TOBE modified TODO
+        random_shuffle(index,index+dbSize);
+        for(int i=0;i<batchSize;i++){
+            pickIndex[i] = index[i];
+        }
+        dataRequest(batchSize,pickIndex,data,label);//TOBE modified TODO
 
         /*step 5: calculate the grad*/
-        model.omputeGrad(grad,param,data,label);
+        model.computeGrad(grad,param,data,label);
 
         /*step 6: return to master*/
         MPI_Send(,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);

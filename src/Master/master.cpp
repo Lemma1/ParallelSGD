@@ -41,6 +41,9 @@ void masterFunc () {
     int paramSize = confInfo.paramSize;
     float learningRate = confInfo.learningRate;
 	
+    // Broadcast paramSize to all slaves
+    MPI_Bcast(&paramSize, 1, MPI_INT, ROOT, MPI_COMM_WORLD);
+
     // Step 1.2: Get basic MPI info
     int nProc, nSlave;
     MPI_Comm_size(MPI_COMM_WORLD, &nProc);
@@ -78,8 +81,8 @@ void masterFunc () {
 	****************************************************************/
 	
     MPI_Status status;
-    // TEMP CODE
-    int nSendMax = 10000;
+    int nSendMax = confInfo.nIterMax;
+    
     // TEMP while loop condition
     while (nSend < nSendMax) {
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -121,9 +124,9 @@ void masterFunc () {
 
     /****************************************************************
     * Step 5: deallocate mem and clear things
-    ****************************************************************/    
+    ****************************************************************/
     delete sgdSolver;
 
     delete [] params;
-    delete [] grad;    
+    delete [] grad;
 }
