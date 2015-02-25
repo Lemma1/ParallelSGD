@@ -1,47 +1,81 @@
 #include<mpi.h>
 #include<stdio.h>
+#include<algorithm>
 
 #include "slave.h"
-#include"SlaveConfig.h"
-
-int slaveLoad(slaveConfinfo *sconfig)
+#include "SlaveConfig.h"
+#include "model.h"
+/*int slaveLoad(slaveConfinfo *sconfig)
 {
     sconfig->paramSize = getSlaveIntConf("parameter size");
     sconfig->algorithmType = getSlaveIntConf("algorithm");
-    sconfig->
-	return 1
-}
+    //sconfig->
+	return 1;
+}*/
 
+
+
+//random pick the data 
 //the main function of slaves
+
+
 void slaveDo(){
-	MPI_Status status;
+    //step 0:init the data in local memory
+    int batchSize = 5;//TODO
+    int dbSize;// define in slave.h or ?
+    dataInit(&dbSize,&batchSize);//TODO
+
+
+    MPI_Status status;
 	//step 1:: configulation
-    slaveConfinfo sconfig;
+    //slaveConfinfo sconfig;
+    /*if(~slaveLoad(&sconfig))
+        return -1;*/	
+    int paramSize;
 
-	if(~slaveLoad(&sconfig))
-        return -1;	
-    float *param = new float[sconfig.paramSize]; 
-    
 
+    //step 1.5:receive some pre-parameters 
+    MPI_Bcast(&paramSize,1,MPI_INT,ROOT,MPI_COMM_WORLD);
+    float *param = new float[paramSize]; 
+    float *grad  = new float[paramSize];
+    float *data  = new float[batchSize*paramSize];
+    float *label = new float[batchSize];
+    int   *index = new int[dbSize];
+    int   *pickIndex = new int[batchSize];
+    linearReg model = linearReg(paramSize,batchSize);
+    for (int i=0;i<dbSize;i++){
+        index[i]=i;
+    }
 
 	//main loop
-	while(1){
+    while(1){
 
 		/*step 2:receive from master*/
-		MPI_Recv(&param,sconfig.paramSize,MPI_FLOAT,0,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+		MPI_Recv(param,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
 
 		/*step 3: check whether ends*/
 		if(status.tag == STOPTAG){
         break;
         } 
 		
-        /*step 4: calculation*/
-        /*TODO*/
+        /*step 4: request for data*/
+        
+        random_shuffle(index,index+dbSize);
+        for(int i=0;i<batchSize;i++){
+            pickIndex[i] = index[i];
+        }
+        dataRequest(batchSize,pickIndex,data,label);//TOBE modified TODO
 
+        /*step 5: calculate the grad*/
+        model.computeGrad(grad,param,data,label);
 
-        /*step 5: return to master*/
-        MPI_Send(&param,sconfig.paramSize,MPI_FLOAT,0,MPI_ANY_TAG,MPI_COMM_WORLD);
+        /*step 6: return to master*/
+        MPI_Send(,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);
 
 	}
     delete [] params;
+    delete [] grad;
+    delete [] label;
+    delete [] data;
+    delete [] index;
 }
