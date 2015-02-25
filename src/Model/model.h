@@ -7,11 +7,11 @@ public:
 	~modelBase();
 
 	/* data */
-	int paramSize;
-	int minibatchSize;
+	int m_nParamSize;
+	int m_nMinibatchSize;
 
 	/* method */
-	void virtual computeGrad (float *params, float *data);
+	void virtual computeGrad (float *grad, float *params, float *data, float *label);
 };
 
 class linearReg: public modelBase
@@ -23,5 +23,5 @@ public:
 	/* data */
 
 	/* method */
-	void computeGrad (float *params, float *data);
+	void computeGrad (float *grad, float *params, float *data, float *label);
 };
