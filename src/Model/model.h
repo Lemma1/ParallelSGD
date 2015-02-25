@@ -1,4 +1,9 @@
-#include <math>
+#ifndef __MODEL_H__
+#define __MODEL_H__
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 class modelBase
 {
@@ -11,7 +16,7 @@ public:
 	int m_nMinibatchSize;
 
 	/* method */
-	void virtual computeGrad (float *grad, float *params, float *data, float *label);
+	float virtual computeGrad (float *grad, float *params, float *data, float *label);
 };
 
 class linearReg: public modelBase
@@ -23,5 +28,7 @@ public:
 	/* data */
 
 	/* method */
-	void computeGrad (float *grad, float *params, float *data, float *label);
+	float computeGrad (float *grad, float *params, float *data, float *label);
 };
+
+#endif
