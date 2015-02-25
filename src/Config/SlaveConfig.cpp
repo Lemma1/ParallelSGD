@@ -6,7 +6,7 @@ int getSlaveIntConf(std::string key)
    return confValue; 
 }
 
-double getSlaveDoubleConf(std::string key)
+double getSlaveFloatConf(std::string key)
 {
    float confValue = cf.Value(SlaveKey, key);
    return confValue; 

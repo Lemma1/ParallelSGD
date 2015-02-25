@@ -10,6 +10,6 @@ static std::string MasterKey = "Master";
 
 int getMasterIntConf(std::string);
 std::string getMasterStringConf(std::string);
-float getMasterDoubleConf(std::string);
+float getMasterFloatConf(std::string);
 
 #endif
