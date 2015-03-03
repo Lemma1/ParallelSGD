@@ -8,13 +8,13 @@ TestData::TestData()
     numFet = 3; 
     numData = 100;
     dataName = "TestData.bin";
-    dataVector = (float*) malloc(sizeof(float)*(numData*numFet+1));
+    dataVector = new float[numData * (numFet + 1)];
     loadData();
 }
 
 TestData::~TestData()
 {
-    delete dataVector;
+    delete [] dataVector;
 }
 
 void TestData::printOutData()
