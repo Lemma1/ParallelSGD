@@ -1,10 +1,22 @@
-class DataFactory()
+#ifndef DATAFACTORY_H__
+#define DATAFACTORY_H__
+
+#include <iostream>
+
+class DataFactory
 {
     public:
 	DataFactory();
-	DataFactory(int);
-	int getDataNumber();
-	void getDataBath(float*, int*, int);
-    private:
-	getDataByIndex(int);
-}
+	//DataFactory(int);
+	virtual int getNumberOfData() {return 0;};
+	virtual void printOutData() {};
+	virtual void getDataBatch(float*, int*, int) {};
+    protected:
+	int numFet;
+	int numData;
+	std::string dataName;
+    public:
+	virtual float getDataByIndex(int,int) {return 0.0;};
+};
+
+#endif
