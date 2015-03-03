@@ -10,12 +10,11 @@ class DataFactory
 	//DataFactory(int);
 	virtual int getNumberOfData() {return 0;};
 	virtual void printOutData() {};
-	virtual void getDataBatch(float*, int*, int) {};
+	virtual void getDataBatch(float*, float*, int*, int) {};
     protected:
 	int numFet;
 	int numData;
 	std::string dataName;
-    public:
 	virtual float getDataByIndex(int,int) {return 0.0;};
 };
 

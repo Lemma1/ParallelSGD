@@ -12,13 +12,14 @@ class TestData
     private:
 	float* dataVector;
 	void loadData();
+    protected:
+	float getDataByIndex(int, int);
     public:
 	TestData();
 	~TestData();
 	int getNumberOfData();
 	void printOutData();
-	float getDataByIndex(int, int);
-	void getDataBatch(float* data, int* indexs, int num);
+	void getDataBatch(float* label, float* data, int* indexs, int num);
 };
 
 #endif

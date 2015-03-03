@@ -60,14 +60,15 @@ float TestData::getDataByIndex(int dataIndex, int fetIndex)
    return(dataVector[ dataIndex * (numFet+1) + fetIndex ]); 
 }
 
-void TestData::getDataBatch(float* data, int* indexs, int num)
+void TestData::getDataBatch(float* label, float* data, int* indexs, int num)
 {
     for (int i=0; i< num; i++)
     {
-	for (int j=0; j< numFet+1; j++)
+	for (int j=0; j< numFet; j++)
 	{
 	    data[i] = getDataByIndex(indexs[i],j);
 	}
+	label[i] = getDataByIndex(indexs[i], numFet+1);
     }
 }
 
