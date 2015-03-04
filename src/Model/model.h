@@ -8,15 +8,15 @@
 class modelBase
 {
 public:
-	modelBase();
-	~modelBase();
+	modelBase(){};
+	~modelBase(){};
 
 	/* data */
 	int m_nParamSize;
 	int m_nMinibatchSize;
 
 	/* method */
-	float virtual computeGrad (float *grad, float *params, float *data, float *label);
+	float virtual computeGrad (float *grad, float *params, float *data, float *label) {return 0.f;};
 };
 
 class linearReg: public modelBase

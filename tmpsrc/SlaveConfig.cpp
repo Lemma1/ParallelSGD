@@ -15,5 +15,5 @@ float getSlaveFloatConf(std::string key)
 std::string getSlaveStringConf(std::string key)
 {
     std::string confValue = cf.Value(SlaveKey, key);
-   return confValue;
+   return confValue; 
 }
