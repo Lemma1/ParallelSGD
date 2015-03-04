@@ -68,7 +68,7 @@ void slaveDo(){
         /*step 6: return to master*/
         MPI_Send(grad,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);
 	}
-    delete [] params;
+    delete [] param;
     delete [] grad;
     delete [] label;
     delete [] data;
