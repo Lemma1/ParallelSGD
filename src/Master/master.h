@@ -12,8 +12,8 @@
 struct masterConfInfo {
 	int paramSize;
 	int nIterMax;
-	float confInfo;
 	float learningRate;
+	float initRange;
 };
 
 void masterFunc ();

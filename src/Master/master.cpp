@@ -9,12 +9,12 @@
 
 void loadConf (masterConfInfo &confInfo) {
     // int related
-    confInfo.paramSize = getMasterIntConf("parameter size")
-    confInfo.nIterMax  = getMasterIntConf("max iteration number")
+    confInfo.paramSize = getMasterIntConf("parameter size");
+    confInfo.nIterMax  = getMasterIntConf("max iteration number");
 
     // float related
-    confInfo.learningRate = getMasterDoubleConf("global learning rate")
-    confInfo.initRange = getMasterDoubleConf("parameter init range")
+    confInfo.learningRate = getMasterFloatConf("global learning rate");
+    confInfo.initRange = getMasterFloatConf("parameter init range");
 
     // string related
 }
@@ -23,8 +23,8 @@ void initParams (masterConfInfo confInfo, float *params) {
     float initMin, initMax;
     initMin = -confInfo.initRange;
     initMax = confInfo.initRange;
-    initWidth = initMax - initMin;
-    for (int i=0; i<conf.paramSize; i++) {
+    float initWidth = initMax - initMin;
+    for (int i=0; i<confInfo.paramSize; i++) {
         params[i] = initMin + initWidth * static_cast<float>(rand()) / RAND_MAX;
     }
 }
@@ -54,7 +54,7 @@ void masterFunc () {
     float *grad = new float[paramSize];
 
     // Step 1.4: Initialize params
-    initParams(confInfo, params, paramSize);
+    initParams(confInfo, params);
 
     // Step 1.5: Initialize SGD Solver
     sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
