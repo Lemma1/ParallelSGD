@@ -57,7 +57,7 @@ void masterFunc () {
 
     // Step 1.4: Initialize params
     initParams(confInfo, params);
-    printf("MASTER: check trained params\n");
+    printf("MASTER: check init params\n");
     for (int i = 0; i < paramSize; i++) {
         printf("%f\t", params[i]);
     }
@@ -99,17 +99,8 @@ void masterFunc () {
     while (nSend < nSendMax) {        
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         nRecv++;
-        // printf("MASTER: check recv grad\n");
-        // for (int i = 0; i < paramSize; i++) {
-        //     printf("%f\t", grad[i]);
-        // }
-        // printf("\n");
-    	// Call solver to update params
-        // printf("MASTER: check grad\n");
-        // for (int i = 0; i < paramSize; i++) {
-        //     printf("%f\t", grad[i]);
-        // }
-        // printf("\n");
+        
+    	// Call solver to update params        
     	sgdSolver->updateParams(params, grad);
 
         // Check recv tag (eg. local new epoch info)
