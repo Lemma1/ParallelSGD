@@ -49,29 +49,39 @@ void slaveDo(){
     for (int i=0;i<dbSize;i++){
         index[i]=i;
     }
+
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int count = 0;
   
 	//main loop
     while(1){
 		/*step 2:receive from master*/
 		MPI_Recv(param,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+        count++;
+        
 		/*step 3: check whether ends*/
-		if(status.MPI_TAG== STOPTAG){
-        break;
+		if(status.MPI_TAG == STOPTAG){
+            break;
         } 
         /*step 4: request for data*/
         std::random_shuffle(index,index+dbSize);
         for(int i=0;i<batchSize;i++){
             pickIndex[i] = index[i];
         }
+
         /*step 5: calculate the grad*/
-        model.computeGrad(grad,param,data,label);
+        float cost = model.computeGrad(grad,param,data,label);
+        
         /*step 6: return to master*/
-        MPI_Send(grad,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);
+        MPI_Send(grad, paramSize, MPI_FLOAT, ROOT, rank, MPI_COMM_WORLD);
 	}
+
+
     delete [] param;
     delete [] grad;
     delete [] label;
     delete [] data;
     delete [] index;
-    delete data;
+    delete dataset;
 }

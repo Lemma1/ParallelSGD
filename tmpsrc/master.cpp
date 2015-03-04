@@ -7,6 +7,8 @@
 #include "sgd.h"
 #include "MasterConfig.h"
 
+#define DEBUG
+
 void loadConf (masterConfInfo &confInfo) {
     // int related
     confInfo.paramSize = getMasterIntConf("parameter size");
@@ -58,6 +60,9 @@ void masterFunc () {
 
     // Step 1.5: Initialize SGD Solver
     sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
+    #ifdef DEBUG
+    printf("MASTER: finish step 1\n");
+    #endif
 
     // Step 1.6: Load cross-validation data
     // loadData();
@@ -72,7 +77,9 @@ void masterFunc () {
         MPI_Send(params, paramSize, MPI_FLOAT, rank, WORKTAG, MPI_COMM_WORLD);
         nSend++;
     }
-
+    #ifdef DEBUG
+    printf("MASTER: finish step 2\n");
+    #endif
     /****************************************************************
     * Step 3: Paralleled training
 	* Receive mini-batch grad from *ANY* slave
@@ -84,10 +91,14 @@ void masterFunc () {
     int nSendMax = confInfo.nIterMax;
     
     // TEMP while loop condition
-    while (nSend < nSendMax) {
+    while (nSend < nSendMax) {        
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         nRecv++;
-
+        // printf("MASTER: check recv grad\n");
+        // for (int i = 0; i < paramSize; i++) {
+        //     printf("%f\t", grad[i]);
+        // }
+        // printf("\n");
     	// Call solver to update params
     	sgdSolver->updateParams(params, grad);
 
@@ -107,21 +118,28 @@ void masterFunc () {
         MPI_Send(params, paramSize, MPI_FLOAT, status.MPI_SOURCE, WORKTAG, MPI_COMM_WORLD);
         nSend++;
     }
-
+    #ifdef DEBUG
+    printf("MASTER: finish step 3\n");
+    #endif
     /****************************************************************
 	* Step 4: Stop the slaves
 	****************************************************************/
 	
     // Step 4.1: Receive all dispatched but irreceived grad result
     while (nRecv < nSend) {
+        // printf("Master, nSend:%d, nRecv:%d\n", nSend, nRecv);
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        sgdSolver->updateParams(params, grad);
+        nRecv++;
     }
-
     // Step 4.2: Send STOPTAG to all slaves
     for (int rank = 1; rank < nProc; ++rank) {
         MPI_Send(&rank, 1, MPI_INT, rank, STOPTAG, MPI_COMM_WORLD);
     }
 
+    #ifdef DEBUG
+    printf("MASTER: finish step 4\n");
+    #endif
     /****************************************************************
     * Step 5: deallocate mem and clear things
     ****************************************************************/

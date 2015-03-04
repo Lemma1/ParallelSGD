@@ -8,7 +8,7 @@ CXX=mpic++
 MPIRUN=mpirun
 
 # compile flags
-CXXFLAGS+=-O3 -std=c++0x
+CXXFLAGS+=-O3 #-std=c++0x
 
 # include flags
 INCFLAGS+=-I./$(INCDIR)
@@ -41,7 +41,7 @@ all : parallelSGD
 
 # run the program
 run : parallelSGD
-	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 4 parallelSGD
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 2 parallelSGD
 
 # compile main program parallelSGD from all objs 
 parallelSGD: $(OBJS)
