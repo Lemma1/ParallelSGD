@@ -19,7 +19,7 @@ class TestData
 	~TestData();
 	int getNumberOfData();
 	void printOutData();
-	void getDataBatch(float* label, float* data, int* indexs, int num);
+	void getDataBatch(float*, float*, int*, int);
 };
 
 #endif
