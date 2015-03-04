@@ -1,6 +1,6 @@
 # dirs
 OBJDIR=objs
-SRCDIR=tmpsrc
+SRCDIR=src
 INCDIR=include
 
 # compiler
@@ -10,31 +10,19 @@ MPIRUN=mpirun
 # compile flags
 CXXFLAGS+=-O3 -std=c++0x
 
-# include flags
-INCFLAGS+=-I./$(INCDIR)
-
-# link flags
+# dynamic link flags
 LDFLAGS+=-lpthread -lmpi -lmpi_cxx -Llib
 
 # src files
 SRCS=\
-	$(SRCDIR)/Chameleon.cpp \
-	$(SRCDIR)/ConfigFile.cpp \
-	$(SRCDIR)/MasterConfig.cpp \
-	$(SRCDIR)/SlaveConfig.cpp \
-	$(SRCDIR)/DataFactory.cpp \
-	$(SRCDIR)/TestData.cpp \
-	$(SRCDIR)/model.cpp \
-	$(SRCDIR)/sgd.cpp \
-	$(SRCDIR)/master.cpp \
-	$(SRCDIR)/slave.cpp \
-	$(SRCDIR)/parallelSGD.cpp
+     $(SRCDIR)/main.cpp \
+     $(SRCDIR)/....           # *** TO ADD MORE ***
 
 # obj files using patsubst matching
 OBJS=$(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 
 # nothing to do here
-# .PHONY: 
+.PHONY: 
 
 # all comes first in the file, so it is the default 
 all : parallelSGD
@@ -45,7 +33,7 @@ run : parallelSGD
 
 # compile main program parallelSGD from all objs 
 parallelSGD: $(OBJS)
-	$(CXX) $(CXXFLAGS) $(INCFLAGS) $(LDFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
 
 # order-only prerequisites for OBJDIR
 $(OBJS): | $(OBJDIR)
@@ -54,7 +42,7 @@ $(OBJDIR):
 
 # compile all objs from corresponding %.cpp file and all other *.h files
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/*.h
-	$(CXX) $(CPPFLAGS) $(INCFLAGS) $(CXXFLAGS) $< -c -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -c -o $@
 
 # clean
 clean:
