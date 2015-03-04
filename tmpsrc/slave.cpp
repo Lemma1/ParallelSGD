@@ -23,7 +23,7 @@ void slaveDo(){
     //step 0:init the data in local memory
     DataFactory *dataset = new TestData();
     
-    int batchSize = 5;//TODO
+    int batchSize = 100;//TODO
     int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
   //  dataInit(&dbSize,&batchSize);//TODO
@@ -64,14 +64,23 @@ void slaveDo(){
 		if(status.MPI_TAG == STOPTAG){
             break;
         } 
+        
         /*step 4: request for data*/
-        std::random_shuffle(index,index+dbSize);
+        // std::random_shuffle(index,index+dbSize);
         for(int i=0;i<batchSize;i++){
             pickIndex[i] = index[i];
         }
+        dataset->getDataBatch(label, data, pickIndex, batchSize);    
+        // dataset->printOutData();
 
         /*step 5: calculate the grad*/
-        float cost = model.computeGrad(grad,param,data,label);
+        float cost = model.computeGrad(grad, param, data, label);
+        // printf("MASTER: check grad\n");
+        // for (int i = 0; i < paramSize; i++) {
+        //     printf("%f\t", grad[i]);
+        // }
+        // printf("\n");
+        // printf("SLAVE[%d]: %f\n", rank, cost);
         
         /*step 6: return to master*/
         MPI_Send(grad, paramSize, MPI_FLOAT, ROOT, rank, MPI_COMM_WORLD);

@@ -57,19 +57,20 @@ int TestData::getNumberOfData()
 //The first int is for data index, second int is for feature index
 float TestData::getDataByIndex(int dataIndex, int fetIndex)
 {
-   return(dataVector[ dataIndex * (numFet+1) + fetIndex ]); 
+   return(dataVector[ dataIndex * (numFet+1) + fetIndex ]);
 }
 
 void TestData::getDataBatch(float* label, float* data, int* indexs, int num)
 {
     for (int i=0; i< num; i++)
     {
-	for (int j=0; j< numFet; j++)
-	{
-	    data[i] = getDataByIndex(indexs[i],j);
-	}
-	label[i] = getDataByIndex(indexs[i], numFet+1);
+    	for (int j=0; j< numFet; j++)
+    	{     
+    	    data[i*numFet+j] = getDataByIndex(indexs[i],j);
+    	}
+        label[i] = getDataByIndex(indexs[i], numFet);
     }
+    
 }
 
 

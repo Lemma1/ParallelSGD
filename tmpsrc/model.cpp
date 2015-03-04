@@ -20,16 +20,26 @@ float linearReg::computeGrad (float *grad, float *params, float *data, float *la
 	int sampleOffset;
 	memset(grad, 0x00, sizeof(float) * m_nParamSize);
 
+	// for (int sample=0; sample<m_nMinibatchSize; sample++) {
+	// 	sampleOffset = sample * m_nParamSize;
+	// 	for (int dim=0; dim<m_nParamSize; dim++) {
+	// 		printf("(%d)(%d,%d): %f\n", sampleOffset, sample, dim, data[sampleOffset + dim]);
+	// 	}
+	// }
+
 	// Accumulate cost and grad
 	for (int sample=0; sample<m_nMinibatchSize; sample++) {
 		sampleOffset = sample * m_nParamSize;
 		predict = 0.f;
 		for (int dim=0; dim<m_nParamSize; dim++) {
 			predict += params[dim] * data[sampleOffset + dim];
-			diff = params[dim] * data[sampleOffset + dim] - label[sample];
-			grad[dim] += data[dim] * diff;
 		}
-		cost += 0.5 * (predict - label[sample]) * (predict - label[sample]);
+
+		diff = predict - label[sample];
+		for (int dim=0; dim<m_nParamSize; dim++) {
+			grad[dim] += data[sampleOffset + dim] * diff;
+		}
+		cost += 0.5 * diff * diff;
 	}
 
 	// Average minibatch_cost and grad

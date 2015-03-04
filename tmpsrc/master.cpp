@@ -7,8 +7,7 @@
 #include "sgd.h"
 #include "MasterConfig.h"
 
-#define DEBUG
-
+// #define DEBUG
 void loadConf (masterConfInfo &confInfo) {
     // int related
     confInfo.paramSize = getMasterIntConf("parameter size");
@@ -27,7 +26,8 @@ void initParams (masterConfInfo confInfo, float *params) {
     initMax = confInfo.initRange;
     float initWidth = initMax - initMin;
     for (int i=0; i<confInfo.paramSize; i++) {
-        params[i] = initMin + initWidth * static_cast<float>(rand()) / RAND_MAX;
+        // params[i] = initMin + initWidth * static_cast<float>(rand()) / RAND_MAX;
+        params[i] = 0.f;
     }
 }
 
@@ -57,6 +57,11 @@ void masterFunc () {
 
     // Step 1.4: Initialize params
     initParams(confInfo, params);
+    printf("MASTER: check trained params\n");
+    for (int i = 0; i < paramSize; i++) {
+        printf("%f\t", params[i]);
+    }
+    printf("\n");
 
     // Step 1.5: Initialize SGD Solver
     sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
@@ -100,6 +105,11 @@ void masterFunc () {
         // }
         // printf("\n");
     	// Call solver to update params
+        // printf("MASTER: check grad\n");
+        // for (int i = 0; i < paramSize; i++) {
+        //     printf("%f\t", grad[i]);
+        // }
+        // printf("\n");
     	sgdSolver->updateParams(params, grad);
 
         // Check recv tag (eg. local new epoch info)
@@ -143,6 +153,12 @@ void masterFunc () {
     /****************************************************************
     * Step 5: deallocate mem and clear things
     ****************************************************************/
+    printf("MASTER: check trained params\n");
+    for (int i = 0; i < paramSize; i++) {
+        printf("%f\t", params[i]);
+    }
+    printf("\n");
+
     delete sgdSolver;
 
     delete [] params;

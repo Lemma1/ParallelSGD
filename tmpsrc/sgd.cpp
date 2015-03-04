@@ -11,6 +11,6 @@ sgdBasic::~sgdBasic () {
 
 void sgdBasic::updateParams (float *params, float *grad) {
 	for (int i=0; i<paramSize; i++) {
-		params[i] += learningRate * grad[i];
+		params[i] -= learningRate * grad[i];
 	}
 }
