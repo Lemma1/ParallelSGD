@@ -5,13 +5,13 @@
 #include "slave.h"
 #include "SlaveConfig.h"
 #include "model.h"
-/*int slaveLoad(slaveConfinfo *sconfig)
-{
-    sconfig->paramSize = getSlaveIntConf("parameter size");
-    sconfig->algorithmType = getSlaveIntConf("algorithm");
-    //sconfig->
-	return 1;
-}*/
+#include "TestData.h"
+#include "DataFactory.h"
+/*
+#include "../Model/model.h"
+#include "../Data/TestData.h"
+#include "../Data/DataFactory.h"
+*/
 
 
 
@@ -21,9 +21,12 @@
 
 void slaveDo(){
     //step 0:init the data in local memory
+    DataFactory *dataset = new TestData();
+    
     int batchSize = 5;//TODO
-    int dbSize;// define in slave.h or ?
-    dataInit(&dbSize,&batchSize);//TODO
+    int dbSize = dataset->getNumberOfDate();// define in slave.h or ?
+    
+  //  dataInit(&dbSize,&batchSize);//TODO
 
 
     MPI_Status status;
@@ -46,36 +49,29 @@ void slaveDo(){
     for (int i=0;i<dbSize;i++){
         index[i]=i;
     }
-
+  
 	//main loop
     while(1){
-
 		/*step 2:receive from master*/
 		MPI_Recv(param,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
-
 		/*step 3: check whether ends*/
 		if(status.tag == STOPTAG){
         break;
         } 
-		
         /*step 4: request for data*/
-        
         random_shuffle(index,index+dbSize);
         for(int i=0;i<batchSize;i++){
             pickIndex[i] = index[i];
         }
-        dataRequest(batchSize,pickIndex,data,label);//TOBE modified TODO
-
         /*step 5: calculate the grad*/
         model.computeGrad(grad,param,data,label);
-
         /*step 6: return to master*/
-        MPI_Send(,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);
-
+        MPI_Send(grad,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);
 	}
     delete [] params;
     delete [] grad;
     delete [] label;
     delete [] data;
     delete [] index;
+    delete data;
 }
