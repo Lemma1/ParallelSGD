@@ -1,3 +1,6 @@
+#ifndef SLAVE_h
+#define SLAVE_h
+
 #include<mpi.h>
 #include<stdio.h>
 
@@ -13,9 +16,9 @@ struct slaveConfinfo{
     //TODO
     
 };
-void slaveDo();
-int slaveLoad(*slaveConfinfo);//return 0 if fail
 
+void slaveDo();
+#endif
 
 
 
