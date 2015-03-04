@@ -55,7 +55,7 @@ void slaveDo(){
 		/*step 2:receive from master*/
 		MPI_Recv(param,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
 		/*step 3: check whether ends*/
-		if(status.tag == STOPTAG){
+		if(status.MPI_TAG == STOPTAG){
         break;
         } 
         /*step 4: request for data*/
