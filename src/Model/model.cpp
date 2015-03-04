@@ -60,10 +60,13 @@ float softmax::computeGrad (float *grad, float *params, float *data, float *labe
 	// Init variables
 	float crossEntropy = 0.f;
 	float diff;
+	float predictProb;
+	int predictLabel;
 	memset(grad, 0x00, sizeof(float) * m_nParamSize);
 
 	// predictulate cost and grad
 	for (int sample=0; sample<m_nMinibatchSize; sample++) {
+		predictProb = 0.f;
 		for (int dim=0; dim<m_nParamSize; dim++) {
 			for (int classIdx=0; classIdx<m_nClassNum; classIdx++) {
 				
