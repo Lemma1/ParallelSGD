@@ -24,7 +24,7 @@ void slaveDo(){
     DataFactory *dataset = new TestData();
     
     int batchSize = 5;//TODO
-    int dbSize = dataset->getNumberOfDate();// define in slave.h or ?
+    int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
   //  dataInit(&dbSize,&batchSize);//TODO
 
@@ -59,7 +59,7 @@ void slaveDo(){
         break;
         } 
         /*step 4: request for data*/
-        random_shuffle(index,index+dbSize);
+        std::random_shuffle(index,index+dbSize);
         for(int i=0;i<batchSize;i++){
             pickIndex[i] = index[i];
         }
@@ -68,7 +68,7 @@ void slaveDo(){
         /*step 6: return to master*/
         MPI_Send(grad,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);
 	}
-    delete [] params;
+    delete [] param;
     delete [] grad;
     delete [] label;
     delete [] data;
