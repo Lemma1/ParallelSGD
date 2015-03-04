@@ -4,15 +4,15 @@
 class sgdBase
 {
 public:
-    sgdBase();
-    ~sgdBase();
+    sgdBase() {};
+    ~sgdBase() {};
 
     /* data */
     int paramSize;
     float learningRate;
 
     /* method */
-    void virtual updateParams (float *params, float *grad);
+    void virtual updateParams (float *params, float *grad) {};
 };
 
 class sgdBasic: public sgdBase
