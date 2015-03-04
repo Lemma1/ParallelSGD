@@ -52,29 +52,21 @@ void slaveDo(){
   
 	//main loop
     while(1){
-
 		/*step 2:receive from master*/
 		MPI_Recv(param,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
-
 		/*step 3: check whether ends*/
 		if(status.tag == STOPTAG){
         break;
         } 
-		
         /*step 4: request for data*/
-        
         random_shuffle(index,index+dbSize);
         for(int i=0;i<batchSize;i++){
             pickIndex[i] = index[i];
         }
-        dataset->getDataBatch(label,data,index,batchSize);
-
         /*step 5: calculate the grad*/
         model.computeGrad(grad,param,data,label);
-
         /*step 6: return to master*/
         MPI_Send(grad,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD);
-
 	}
     delete [] params;
     delete [] grad;
@@ -82,5 +74,4 @@ void slaveDo(){
     delete [] data;
     delete [] index;
     delete data;
-    }
 }
