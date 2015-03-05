@@ -5,7 +5,7 @@
 
 #include "master.h"
 
-#define DEBUG
+//#define DEBUG
 
 void loadConf (masterConfInfo &confInfo) {
     // int related
@@ -56,9 +56,12 @@ sgdBase * initSgdSolver (masterConfInfo confInfo) {
             break;
         }
         // rmsprop
-        // case 3: { 
-        //     break;
-        // }
+        case 3: { 
+            float decayFactor = getMasterFloatConf("rmsprop decay factor");
+            sgdSolver = new rmsprop(confInfo.paramSize, decayFactor);
+            printf("Init rmsprop solver.\n");
+            break;
+        }
         default: {
             printf("Error solver type.\n");
             exit(-1);

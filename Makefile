@@ -28,6 +28,7 @@ SRCS=\
 	$(SRCDIR)/sgd.cpp \
 	$(SRCDIR)/adagrad.cpp \
 	$(SRCDIR)/adadelta.cpp \
+	$(SRCDIR)/rmsprop.cpp \
 	$(SRCDIR)/master.cpp \
 	$(SRCDIR)/slave.cpp \
 	$(SRCDIR)/parallelSGD.cpp
@@ -43,7 +44,7 @@ all : parallelSGD
 
 # run the program
 run : parallelSGD
-	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 2 parallelSGD
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 4 parallelSGD
 
 # compile main program parallelSGD from all objs 
 parallelSGD: $(OBJS)

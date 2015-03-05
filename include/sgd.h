@@ -1,6 +1,8 @@
 #ifndef __SGD_H__
 #define __SGD_H__
 
+#include <stdio.h>
+
 class sgdBase
 {
 public:
@@ -8,13 +10,21 @@ public:
     ~sgdBase() {};
 
     /* data */
+
+    /* method */
+    void virtual updateParams (float *params, float *grad) {};
+protected:
+    /* data */
     int m_nParamSize;
     float m_learningRate;
 
     /* method */
-    void virtual updateParams (float *params, float *grad) {};
+    //TODO void truncate (float);
 };
 
+/****************************************************************
+* BASIC SGD
+****************************************************************/
 class sgdBasic: public sgdBase
 {
 public:
@@ -27,6 +37,9 @@ public:
     void updateParams (float *params, float *grad);
 };
 
+/****************************************************************
+* ADAGRAD
+****************************************************************/
 class adagrad: public sgdBase
 {
 public:
@@ -40,9 +53,12 @@ public:
 
 private:
     /* data */
-    float *m_histGradSquare;
+    float *m_histSquareGrad;
 };
 
+/****************************************************************
+* ADADELTA
+****************************************************************/
 class adadelta: public sgdBase
 {
 public:
@@ -59,8 +75,29 @@ private:
     float m_decayFactor;
     float m_stableConst;
 
-    float *m_EGradSquare;
-    float *m_EDeltaSquare;
+    float *m_ESquareGrad;
+    float *m_ESquareDelta;
+};
+
+/****************************************************************
+* RMSPROP
+****************************************************************/
+class rmsprop: public sgdBase
+{
+public:
+    rmsprop(int paramSize, float decayFactor);
+    ~rmsprop();
+
+    /* data */
+
+    /* method */
+    void updateParams (float *params, float *grad);
+
+private:
+    /* data */
+    float m_decayFactor;
+
+    float *m_meanSquareGrad;    
 };
 
 #endif
