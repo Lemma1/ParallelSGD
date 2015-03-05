@@ -26,6 +26,8 @@ SRCS=\
 	$(SRCDIR)/TestData.cpp \
 	$(SRCDIR)/model.cpp \
 	$(SRCDIR)/sgd.cpp \
+	$(SRCDIR)/adagrad.cpp \
+	$(SRCDIR)/adadelta.cpp \
 	$(SRCDIR)/master.cpp \
 	$(SRCDIR)/slave.cpp \
 	$(SRCDIR)/parallelSGD.cpp

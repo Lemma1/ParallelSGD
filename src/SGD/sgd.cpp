@@ -1,8 +1,8 @@
 #include "sgd.h"
 
-sgdBasic::sgdBasic (int size, float eta) {
-	paramSize = size;
-	learningRate = eta;
+sgdBasic::sgdBasic (int paramSize, float learningRate) {
+	m_nParamSize = paramSize;
+	m_learningRate = learningRate;
 }
 
 sgdBasic::~sgdBasic () {
@@ -10,7 +10,7 @@ sgdBasic::~sgdBasic () {
 }
 
 void sgdBasic::updateParams (float *params, float *grad) {
-	for (int i=0; i<paramSize; i++) {
-		params[i] -= learningRate * grad[i];
+	for (int i=0; i<m_nParamSize; i++) {
+		params[i] -= m_learningRate * grad[i];
 	}
 }

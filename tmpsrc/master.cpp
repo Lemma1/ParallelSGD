@@ -4,14 +4,14 @@
 #include <algorithm>
 
 #include "master.h"
-#include "sgd.h"
-#include "MasterConfig.h"
 
-// #define DEBUG
+#define DEBUG
+
 void loadConf (masterConfInfo &confInfo) {
     // int related
     confInfo.paramSize = getMasterIntConf("parameter size");
     confInfo.nIterMax  = getMasterIntConf("max iteration number");
+    confInfo.solverType  = getMasterIntConf("solver type");
 
     // float related
     confInfo.learningRate = getMasterFloatConf("global learning rate");
@@ -31,6 +31,42 @@ void initParams (masterConfInfo confInfo, float *params) {
     }
 }
 
+sgdBase * initSgdSolver (masterConfInfo confInfo) {
+    int solverType = confInfo.solverType;
+    sgdBase *sgdSolver;
+    switch (solverType) {
+        // sgdBasic
+        case 0: {
+            printf("Init basic sgd solver.\n");
+            sgdSolver = new sgdBasic(confInfo.paramSize, confInfo.learningRate);
+            break;
+        }
+        // adagrad
+        case 1: { 
+            printf("Init adagrad solver.\n");
+            sgdSolver = new adagrad(confInfo.paramSize, confInfo.learningRate);
+            break;
+        }
+        // adadelta
+        case 2: {
+            float decayFactor = getMasterFloatConf("adadelta decay factor");
+            float stableConst = getMasterFloatConf("adadelta stable const");
+            sgdSolver = new adadelta(confInfo.paramSize, decayFactor, stableConst);
+            printf("Init adadelta solver.\n");
+            break;
+        }
+        // rmsprop
+        // case 3: { 
+        //     break;
+        // }
+        default: {
+            printf("Error solver type.\n");
+            exit(-1);
+        }
+    }
+    return sgdSolver;
+}
+
 void masterFunc () {
     /****************************************************************
     * Step 1: Setup and Initialization
@@ -41,7 +77,7 @@ void masterFunc () {
     loadConf(confInfo);
 
     int paramSize = confInfo.paramSize;
-    float learningRate = confInfo.learningRate;
+    // float learningRate = confInfo.learningRate;
 	
     // Broadcast paramSize to all slaves
     MPI_Bcast(&paramSize, 1, MPI_INT, ROOT, MPI_COMM_WORLD);
@@ -57,14 +93,15 @@ void masterFunc () {
 
     // Step 1.4: Initialize params
     initParams(confInfo, params);
-    printf("MASTER: check init params\n");
+    printf("MASTER: check trained params\n");
     for (int i = 0; i < paramSize; i++) {
         printf("%f\t", params[i]);
     }
     printf("\n");
 
     // Step 1.5: Initialize SGD Solver
-    sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
+    // sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
+    sgdBase *sgdSolver = initSgdSolver(confInfo);
     #ifdef DEBUG
     printf("MASTER: finish step 1\n");
     #endif
@@ -99,8 +136,17 @@ void masterFunc () {
     while (nSend < nSendMax) {        
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         nRecv++;
-        
-    	// Call solver to update params        
+        // printf("MASTER: check recv grad\n");
+        // for (int i = 0; i < paramSize; i++) {
+        //     printf("%f\t", grad[i]);
+        // }
+        // printf("\n");
+    	// Call solver to update params
+        // printf("MASTER: check grad\n");
+        // for (int i = 0; i < paramSize; i++) {
+        //     printf("%f\t", grad[i]);
+        // }
+        // printf("\n");
     	sgdSolver->updateParams(params, grad);
 
         // Check recv tag (eg. local new epoch info)

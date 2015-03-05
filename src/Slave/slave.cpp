@@ -23,7 +23,7 @@ void slaveDo(){
     //step 0:init the data in local memory
     DataFactory *dataset = new TestData();
     
-    int batchSize = 100;//TODO
+    int batchSize = 10;//TODO
     int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
   //  dataInit(&dbSize,&batchSize);//TODO
