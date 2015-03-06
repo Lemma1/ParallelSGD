@@ -26,8 +26,8 @@ void initParams (masterConfInfo confInfo, float *params) {
     initMax = confInfo.initRange;
     float initWidth = initMax - initMin;
     for (int i=0; i<confInfo.paramSize; i++) {
-        // params[i] = initMin + initWidth * static_cast<float>(rand()) / RAND_MAX;
-        params[i] = 0.f;
+        params[i] = initMin + initWidth * static_cast<float>(rand()) / RAND_MAX;
+        // params[i] = 0.f;
     }
 }
 
@@ -80,7 +80,6 @@ void masterFunc () {
     loadConf(confInfo);
 
     int paramSize = confInfo.paramSize;
-    // float learningRate = confInfo.learningRate;
 	
     // Broadcast paramSize to all slaves
     MPI_Bcast(&paramSize, 1, MPI_INT, ROOT, MPI_COMM_WORLD);
@@ -103,7 +102,6 @@ void masterFunc () {
     printf("\n");
 
     // Step 1.5: Initialize SGD Solver
-    // sgdBase *sgdSolver = new sgdBasic(paramSize, learningRate);
     sgdBase *sgdSolver = initSgdSolver(confInfo);
     #ifdef DEBUG
     printf("MASTER: finish step 1\n");
