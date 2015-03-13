@@ -1,7 +1,7 @@
 # dirs
 OBJDIR=objs
-SRCDIR=tmpsrc
-INCDIR=include
+SRCDIR=src
+INCDIR=$(VPATH)
 
 # compiler
 CXX=mpic++
@@ -11,27 +11,36 @@ MPIRUN=mpirun
 CXXFLAGS+=-O3 #-std=c++0x
 
 # include flags
-INCFLAGS+=-I./$(INCDIR)
+INCFLAGS+=$(foreach d, $(VPATH), -I$d)
 
 # link flags
 LDFLAGS+=-lpthread -lmpi -lmpi_cxx -Llib
 
+# vpath
+VPATH = $(SRCDIR) \
+	$(SRCDIR)/Config \
+	$(SRCDIR)/Data \
+	$(SRCDIR)/Master \
+	$(SRCDIR)/Model \
+	$(SRCDIR)/SGD \
+	$(SRCDIR)/Slave \
+	
 # src files
 SRCS=\
-	$(SRCDIR)/Chameleon.cpp \
-	$(SRCDIR)/ConfigFile.cpp \
-	$(SRCDIR)/MasterConfig.cpp \
-	$(SRCDIR)/SlaveConfig.cpp \
-	$(SRCDIR)/DataFactory.cpp \
-	$(SRCDIR)/TestData.cpp \
-	$(SRCDIR)/model.cpp \
-	$(SRCDIR)/sgd.cpp \
-	$(SRCDIR)/adagrad.cpp \
-	$(SRCDIR)/adadelta.cpp \
-	$(SRCDIR)/rmsprop.cpp \
-	$(SRCDIR)/master.cpp \
-	$(SRCDIR)/slave.cpp \
-	$(SRCDIR)/parallelSGD.cpp
+	Chameleon.cpp \
+	ConfigFile.cpp \
+	MasterConfig.cpp \
+	SlaveConfig.cpp \
+	DataFactory.cpp \
+	TestData.cpp \
+	model.cpp \
+	sgd.cpp \
+	adagrad.cpp \
+	adadelta.cpp \
+	rmsprop.cpp \
+	master.cpp \
+	slave.cpp \
+	parallelSGD.cpp
 
 # obj files using patsubst matching
 OBJS=$(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
