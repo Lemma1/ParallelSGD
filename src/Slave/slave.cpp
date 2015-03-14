@@ -5,6 +5,7 @@
 #include "slave.h"
 #include "SlaveConfig.h"
 #include "model.h"
+#include "svm.h"
 #include "TestData.h"
 #include "DataFactory.h"
 /*
@@ -45,7 +46,7 @@ void slaveDo(){
     float *label = new float[batchSize];
     int   *index = new int[dbSize];
     int   *pickIndex = new int[batchSize];
-    linearReg model = linearReg(paramSize,batchSize);
+    modelSVM model = modelSVM(paramSize,batchSize, 0.5f);
     for (int i=0;i<dbSize;i++){
         index[i]=i;
     }
