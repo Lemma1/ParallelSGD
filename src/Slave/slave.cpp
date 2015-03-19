@@ -54,7 +54,7 @@ void slaveDo(){
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int count = 0;
-  
+    int indexI = 0;
 	//main loop
     while(1){
 		/*step 2:receive from master*/
@@ -67,9 +67,14 @@ void slaveDo(){
         } 
         
         /*step 4: request for data*/
-        // std::random_shuffle(index,index+dbSize);
+        if (indexI+batchSize >= dbSize){
+            std::random_shuffle(index,index+dbSize);
+            indexI = 0;
+        }
+        
         for(int i=0;i<batchSize;i++){
-            pickIndex[i] = index[i];
+            pickIndex[i] = index[indexI];
+            indexI++;
         }
         dataset->getDataBatch(label, data, pickIndex, batchSize);    
         // dataset->printOutData();

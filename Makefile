@@ -40,7 +40,8 @@ SRCS=\
 	rmsprop.cpp \
 	master.cpp \
 	slave.cpp \
-	parallelSGD.cpp
+	parallelSGD.cpp\
+	svm.cpp
 
 # obj files using patsubst matching
 OBJS=$(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
