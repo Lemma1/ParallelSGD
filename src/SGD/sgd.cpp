@@ -1,8 +1,8 @@
 #include "sgd.h"
 
-sgdBasic::sgdBasic (int paramSize, float learningRate) {
+sgdBasic::sgdBasic (ConfReader *confReader, int paramSize) {
 	m_nParamSize = paramSize;
-	m_learningRate = learningRate;
+	m_learningRate = confReader->getFloat("learning rate");
 }
 
 sgdBasic::~sgdBasic () {

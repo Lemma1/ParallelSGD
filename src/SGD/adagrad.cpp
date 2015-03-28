@@ -2,9 +2,9 @@
 #include <string.h>
 #include "sgd.h"
 
-adagrad::adagrad (int paramSize, float learningRate) {
+adagrad::adagrad (ConfReader *confReader, int paramSize) {
 	m_nParamSize = paramSize;
-	m_learningRate = learningRate;
+	m_learningRate = confReader->getFloat("learning rate");
 
 	m_histSquareGrad = new float [m_nParamSize];
 	for (int i=0; i<m_nParamSize; i++) {

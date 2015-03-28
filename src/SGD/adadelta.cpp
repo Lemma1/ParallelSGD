@@ -2,10 +2,10 @@
 #include <string.h>
 #include "sgd.h"
 
-adadelta::adadelta (int paramSize, float decayFactor, float stableConst) {
+adadelta::adadelta (ConfReader *confReader, int paramSize) {
 	m_nParamSize = paramSize;	
-	m_decayFactor = decayFactor;
-	m_stableConst = stableConst;
+	m_decayFactor = confReader->getFloat("adadelta decay factor");
+	m_stableConst = confReader->getFloat("adadelta stable const");
 
 	m_ESquareGrad  = new float [m_nParamSize];
 	m_ESquareDelta = new float [m_nParamSize];

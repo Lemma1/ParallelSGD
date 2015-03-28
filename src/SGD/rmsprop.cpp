@@ -2,9 +2,9 @@
 #include <string.h>
 #include "sgd.h"
 
-rmsprop::rmsprop (int paramSize, float decayFactor) {
-	m_nParamSize = paramSize;	
-	m_decayFactor = decayFactor;
+rmsprop::rmsprop (ConfReader *confReader, int paramSize) {
+	m_nParamSize = paramSize;
+	m_decayFactor = confReader->getFloat("rmsprop decay factor");
 
 	m_meanSquareGrad  = new float [m_nParamSize];
 

@@ -2,6 +2,7 @@
 #define __SGD_H__
 
 #include <stdio.h>
+#include "confreader.h"
 
 class sgdBase
 {
@@ -28,7 +29,7 @@ protected:
 class sgdBasic: public sgdBase
 {
 public:
-    sgdBasic(int paramSize, float learningRate);
+    sgdBasic(ConfReader *confReader, int paramSize);
     ~sgdBasic();
 
     /* data */
@@ -43,7 +44,7 @@ public:
 class adagrad: public sgdBase
 {
 public:
-    adagrad(int paramSize, float learningRate);
+    adagrad(ConfReader *confReader, int paramSize);
     ~adagrad();
 
     /* data */
@@ -62,7 +63,7 @@ private:
 class adadelta: public sgdBase
 {
 public:
-    adadelta(int paramSize, float decayFactor, float stableConst);
+    adadelta(ConfReader *confReader, int paramSize);
     ~adadelta();
 
     /* data */
@@ -85,7 +86,7 @@ private:
 class rmsprop: public sgdBase
 {
 public:
-    rmsprop(int paramSize, float decayFactor);
+    rmsprop(ConfReader *confReader, int paramSize);
     ~rmsprop();
 
     /* data */
