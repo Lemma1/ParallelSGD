@@ -52,6 +52,12 @@ float linearReg::computeGrad (float *grad, float *params, float *data, float *la
 	return cost;
 }
 
+void linearReg::initParams (float *params) {
+	for (int i=0; i<m_nParamSize; i++) {
+        params[i] = SYM_UNIFORM_RAND;
+    }
+}
+
 /****************************************************************
 * Method definition for Softmax Classification
 ****************************************************************/

@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SYM_UNIFORM_RAND (2 * ((float) rand() / (RAND_MAX)) - 1)   // rand float in [-1, 1]
+
 class modelBase
 {
 public:
@@ -17,6 +19,7 @@ public:
 
 	/* method */
 	float virtual computeGrad (float *grad, float *params, float *data, float *label) {return 0.f;};
+	void virtual initParams (float *params) {};
 };
 
 class linearReg: public modelBase
@@ -29,6 +32,7 @@ public:
 
 	/* method */
 	float computeGrad (float *grad, float *params, float *data, float *label);
+	void initParams (float *params);
 };
 
 class softmax: public modelBase
