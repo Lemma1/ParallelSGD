@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "confreader.h"
+
 #define SYM_UNIFORM_RAND (2 * ((float) rand() / (RAND_MAX)) - 1)   // rand float in [-1, 1]
 
 class modelBase
@@ -25,8 +27,8 @@ public:
 class linearReg: public modelBase
 {
 public:
-	linearReg(int paramSize, int minibatchSize);
-	~linearReg();
+	linearReg (ConfReader *confReader, int minibatchSize);
+	~linearReg ();
 
 	/* data */
 
@@ -38,8 +40,8 @@ public:
 class softmax: public modelBase
 {
 public:
-	softmax(int paramSize, int minibatchSize, int classNum);
-	~softmax();
+	softmax (ConfReader *confReader, int minibatchSize);
+	~softmax ();
 
 	/* data */
 	int m_nClassNum;

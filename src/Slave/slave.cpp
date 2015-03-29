@@ -1,20 +1,57 @@
-#include<mpi.h>
-#include<stdio.h>
-#include<algorithm>
+#include <mpi.h>
+#include <stdio.h>
+#include <algorithm>
 
 #include "slave.h"
-#include "SlaveConfig.h"
 #include "model.h"
 #include "svm.h"
+#include "neural_net.h"
 #include "TestData.h"
 #include "DataFactory.h"
+#include "confreader.h"
 /*
 #include "../Model/model.h"
 #include "../Data/TestData.h"
 #include "../Data/DataFactory.h"
 */
 
+//#define DEBUG_SLAVE
 
+modelBase * initModelSlave (ConfReader *modelConf, int batchSize) {
+    int modelType = modelConf->getInt("model type");
+    modelBase *model;
+    switch (modelType) {
+        // linear regression
+        case 0: {
+            printf("Slave Model: Init linear regression.\n");
+            model = new linearReg(modelConf, batchSize);
+            break;
+        }
+        // softmax regression
+        case 1: { 
+            printf("Slave Model: Init softmax regression.\n");
+            model = new softmax(modelConf, batchSize);
+            break;
+        }
+        // SVM
+        case 2: {
+            printf("Slave Model: Init support vector machine.\n");
+            model = new modelSVM(modelConf, batchSize);
+            break;
+        }
+        // feedforward NN
+        case 3: {
+            printf("Slave Model: Init feedforward neural network.\n");
+            model = new feedForwardNN(modelConf, batchSize);
+            break;
+        }
+        default: {
+            printf("Error model type.\n");
+            exit(-1);
+        }
+    }
+    return model;
+}
 
 //random pick the data 
 //the main function of slaves
@@ -24,11 +61,11 @@ void slaveDo(){
     //step 0:init the data in local memory
     DataFactory *dataset = new TestData();
     
-    int batchSize = 10;//TODO
     int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
   //  dataInit(&dbSize,&batchSize);//TODO
-
+    ConfReader *slaveConf = new ConfReader("config.conf", "Slave");
+    int batchSize = slaveConf->getInt("training batch size");
 
     MPI_Status status;
 	//step 1:: configulation
@@ -36,7 +73,6 @@ void slaveDo(){
     /*if(~slaveLoad(&sconfig))
         return -1;*/	
     int paramSize;
-
 
     //step 1.5:receive some pre-parameters 
     MPI_Bcast(&paramSize,1,MPI_INT,ROOT,MPI_COMM_WORLD);
@@ -46,7 +82,9 @@ void slaveDo(){
     float *label = new float[batchSize];
     int   *index = new int[dbSize];
     int   *pickIndex = new int[batchSize];
-    modelSVM model = modelSVM(paramSize,batchSize, 0.5f);
+
+    ConfReader *modelConf = new ConfReader("config.conf", "Model");
+    modelBase *model = initModelSlave(modelConf, batchSize);
     for (int i=0;i<dbSize;i++){
         index[i]=i;
     }
@@ -80,7 +118,7 @@ void slaveDo(){
         // dataset->printOutData();
 
         /*step 5: calculate the grad*/
-        float cost = model.computeGrad(grad, param, data, label);
+        float cost = model->computeGrad(grad, param, data, label);
         // printf("MASTER: check grad\n");
         // for (int i = 0; i < paramSize; i++) {
         //     printf("%f\t", grad[i]);

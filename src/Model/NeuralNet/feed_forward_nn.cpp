@@ -1,13 +1,19 @@
+#include <sstream> 
 #include "neural_net.h"
 
-feedForwardNN::feedForwardNN(int minibatchSize, int numLayer, int *numNeuronList, int *layerTypeList) {
+feedForwardNN::feedForwardNN (ConfReader *confReader, int minibatchSize) {
 	m_nMinibatchSize = minibatchSize;
 
-	m_numLayer = numLayer;
+	m_numLayer = confReader->getInt("num_layer");
 	m_numNeuronList = new int[m_numLayer];
 	m_layerTypeList = new int[m_numLayer];
-	memcpy(m_numNeuronList, numNeuronList, sizeof(int) * m_numLayer);
-	memcpy(m_layerTypeList, layerTypeList, sizeof(int) * m_numLayer);
+
+	for (int layer=0; layer<m_numLayer; ++layer) {
+		std::stringstream ss;
+  		ss << layer;
+		m_numNeuronList[layer] = confReader->getInt("num_neuron_layer_" + ss.str());
+		m_layerTypeList[layer] = confReader->getInt("type_layer_" + ss.str());
+	}
 
 	// Initialize layers
 	for (int i=0; i<m_numLayer; i++) {

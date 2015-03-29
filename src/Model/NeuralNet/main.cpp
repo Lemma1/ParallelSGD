@@ -1,14 +1,20 @@
 #include <stdio.h>
 #include "model.h"
+
 #include "neural_net.h"
+#include "confreader.h"
 
 int main () {
 
-	int numLayer = 4;
-	int numNeuronList[4] = {2, 3, 3, 2};
-	int layerTypeList[4] = {0, 1, 1, 1};
+	// int numLayer = 4;
+	// int numNeuronList[4] = {2, 3, 3, 2};
+	// int layerTypeList[4] = {0, 1, 1, 1};
 
-	modelBase * model = new feedForwardNN(2, numLayer, numNeuronList, layerTypeList);
+	int minibatchSize = 2;
+
+	ConfReader *confReader = new ConfReader("config.conf", "Model");
+
+	modelBase * model = new feedForwardNN(confReader, minibatchSize);
 	
 	int paramSize = model->m_nParamSize;
 	printf("paramSize: %d\n", paramSize);

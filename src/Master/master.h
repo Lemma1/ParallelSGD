@@ -4,7 +4,6 @@
 #include <mpi.h>
 #include <stdio.h>
 #include "sgd.h"
-#include "MasterConfig.h"
 
 #define ROOT 0
 

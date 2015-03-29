@@ -2,11 +2,11 @@
 
 #include <algorithm>
 
-modelSVM::modelSVM(int paramSize, int minibatchSize, float lambda)
+modelSVM::modelSVM(ConfReader *confReader, int minibatchSize)
 {
-    m_nParamSize = paramSize;
+    m_nParamSize = confReader->getInt("parameter size");    
+    svm_lambda = confReader->getFloat("svm lambda");
     m_nMinibatchSize = minibatchSize;
-    svm_lambda = lambda;
 }
 
 modelSVM::~modelSVM()

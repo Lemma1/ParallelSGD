@@ -1,5 +1,5 @@
-#ifndef CONFREADER_H__
-#define CONFREADER_H__
+#ifndef __CONFREADER_H__
+#define __CONFREADER_H__
 
 #include <string>
 #include "ConfigFile.h"

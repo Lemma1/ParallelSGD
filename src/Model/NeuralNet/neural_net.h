@@ -8,8 +8,8 @@
 class feedForwardNN: public modelBase
 {
 public:
-	feedForwardNN(int minibatchSize, int numLayer, int *numNeuronList, int *layerTypeList);
-	~feedForwardNN();
+	feedForwardNN (ConfReader *confReader, int minibatchSize);
+	~feedForwardNN ();
 
 	/* data */
 	int m_numLayer;

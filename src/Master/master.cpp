@@ -4,61 +4,74 @@
 #include <algorithm>
 
 #include "master.h"
+#include "confreader.h"
+#include "model.h"
+#include "svm.h"
+#include "neural_net.h"
 
 //#define DEBUG
 
-void loadConf (masterConfInfo &confInfo) {
-    // int related
-    confInfo.paramSize = getMasterIntConf("parameter size");
-    confInfo.nIterMax  = getMasterIntConf("max iteration number");
-    confInfo.solverType  = getMasterIntConf("solver type");
-
-    // float related
-    confInfo.learningRate = getMasterFloatConf("global learning rate");
-    confInfo.initRange = getMasterFloatConf("parameter init range");
-
-    // string related
-}
-
-void initParams (masterConfInfo confInfo, float *params) {
-    float initMin, initMax;
-    initMin = -confInfo.initRange;
-    initMax = confInfo.initRange;
-    float initWidth = initMax - initMin;
-    for (int i=0; i<confInfo.paramSize; i++) {
-        params[i] = initMin + initWidth * static_cast<float>(rand()) / RAND_MAX;
-        // params[i] = 0.f;
+modelBase * initModelMaster (ConfReader *modelConf, int validBatchSize) {
+    int modelType = modelConf->getInt("model type");
+    modelBase *model;
+    switch (modelType) {
+        // linear regression
+        case 0: {
+            printf("Model: Init linear regression.\n");
+            model = new linearReg(modelConf, validBatchSize);
+            break;
+        }
+        // softmax regression
+        case 1: { 
+            printf("Model: Init softmax regression.\n");
+            model = new softmax(modelConf, validBatchSize);
+            break;
+        }
+        // SVM
+        case 2: {
+            printf("Model: Init support vector machine.\n");
+            model = new modelSVM(modelConf, validBatchSize);
+            break;
+        }
+        // feedforward NN
+        case 3: {
+            printf("Model: Init feedforward neural network.\n");
+            model = new feedForwardNN(modelConf, validBatchSize);
+            break;
+        }
+        default: {
+            printf("Error model type.\n");
+            exit(-1);
+        }
     }
+    return model;
 }
 
-sgdBase * initSgdSolver (masterConfInfo confInfo) {
-    int solverType = confInfo.solverType;
+sgdBase * initSgdSolver (ConfReader *confReader, int paramSize) {
+    int solverType = confReader->getInt("solver type");
     sgdBase *sgdSolver;
     switch (solverType) {
         // sgdBasic
         case 0: {
             printf("Init basic sgd solver.\n");
-            sgdSolver = new sgdBasic(confInfo.paramSize, confInfo.learningRate);
+            sgdSolver = new sgdBasic(confReader, paramSize);
             break;
         }
         // adagrad
         case 1: { 
             printf("Init adagrad solver.\n");
-            sgdSolver = new adagrad(confInfo.paramSize, confInfo.learningRate);
+            sgdSolver = new adagrad(confReader, paramSize);
             break;
         }
         // adadelta
-        case 2: {
-            float decayFactor = getMasterFloatConf("adadelta decay factor");
-            float stableConst = getMasterFloatConf("adadelta stable const");
-            sgdSolver = new adadelta(confInfo.paramSize, decayFactor, stableConst);
+        case 2: {            
+            sgdSolver = new adadelta(confReader, paramSize);
             printf("Init adadelta solver.\n");
             break;
         }
         // rmsprop
-        case 3: { 
-            float decayFactor = getMasterFloatConf("rmsprop decay factor");
-            sgdSolver = new rmsprop(confInfo.paramSize, decayFactor);
+        case 3: {             
+            sgdSolver = new rmsprop(confReader, paramSize);
             printf("Init rmsprop solver.\n");
             break;
         }
@@ -73,36 +86,34 @@ sgdBase * initSgdSolver (masterConfInfo confInfo) {
 void masterFunc () {
     /****************************************************************
     * Step 1: Setup and Initialization
-    * Load conf, allocate mem, init params, init solver
+    * Load conf, init model, allocate mem, init params, init solver
+    * Load cross-validation data
     ****************************************************************/
+
     // Step 1.1: Load configuration
-    masterConfInfo confInfo;
-    loadConf(confInfo);
+    ConfReader *masterConf = new ConfReader("config.conf", "Master");
+    int validBatchSize = masterConf->getInt("validation batch size");
 
-    int paramSize = confInfo.paramSize;
-	
-    // Broadcast paramSize to all slaves
-    MPI_Bcast(&paramSize, 1, MPI_INT, ROOT, MPI_COMM_WORLD);
-
-    // Step 1.2: Get basic MPI info
-    int nProc, nSlave;
-    MPI_Comm_size(MPI_COMM_WORLD, &nProc);
-    nSlave = nProc - 1;
+    // Step 1.2 Initialize model
+    ConfReader *modelConf = new ConfReader("config.conf", "Model");
+    modelBase *model = initModelMaster(modelConf, validBatchSize);
+    int paramSize = model->m_nParamSize;
+    printf("paramSize: %d\n", paramSize);
 
     // Step 1.3: Allocate master memory
     float *params = new float[paramSize];
     float *grad = new float[paramSize];
 
     // Step 1.4: Initialize params
-    initParams(confInfo, params);
-    printf("MASTER: check trained params\n");
+    model->initParams(params);
+    printf("MASTER: check initialized params\n");
     for (int i = 0; i < paramSize; i++) {
         printf("%f\t", params[i]);
     }
     printf("\n");
-
+	
     // Step 1.5: Initialize SGD Solver
-    sgdBase *sgdSolver = initSgdSolver(confInfo);
+    sgdBase *sgdSolver = initSgdSolver(masterConf, paramSize);
     #ifdef DEBUG
     printf("MASTER: finish step 1\n");
     #endif
@@ -110,10 +121,17 @@ void masterFunc () {
     // Step 1.6: Load cross-validation data
     // loadData();
 
-	/****************************************************************
+    /****************************************************************
     * Step 2: Seed the slaves
-	* Send the same initial params with WORKTAG to all slaves
-	****************************************************************/
+    * (1) Broadcast paramSize to all slaves
+    * (2) Send the same initial params with WORKTAG to all slaves
+    ****************************************************************/
+    int nProc;
+    MPI_Comm_size(MPI_COMM_WORLD, &nProc);
+    int nSlave = nProc - 1;
+
+    MPI_Bcast(&paramSize, 1, MPI_INT, ROOT, MPI_COMM_WORLD);    
+	
     int nSend = 0;
     int nRecv = 0;
     for (int rank = 1; rank < nProc; ++rank) {
@@ -123,6 +141,7 @@ void masterFunc () {
     #ifdef DEBUG
     printf("MASTER: finish step 2\n");
     #endif
+
     /****************************************************************
     * Step 3: Paralleled training
 	* Receive mini-batch grad from *ANY* slave
@@ -131,7 +150,7 @@ void masterFunc () {
 	****************************************************************/
 	
     MPI_Status status;
-    int nSendMax = confInfo.nIterMax;
+    int nSendMax = masterConf->getInt("max iteration number");
     
     // TEMP while loop condition
     while (nSend < nSendMax) {        

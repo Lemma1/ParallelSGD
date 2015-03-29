@@ -6,7 +6,7 @@
 class modelSVM :public modelBase
 {
     public:
-	modelSVM(int, int, float);
+	modelSVM(ConfReader *, int);
 	~modelSVM();
 
 	/* data */

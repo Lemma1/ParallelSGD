@@ -1,5 +1,5 @@
-#ifndef CHAMELEON_H__
-#define CHAMELEON_H__
+#ifndef __CHAMELEON_H__
+#define __CHAMELEON_H__
 
 #include <string>
 

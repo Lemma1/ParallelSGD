@@ -4,8 +4,8 @@
 * Method definition for Linear Regression
 ****************************************************************/
 
-linearReg::linearReg (int paramSize, int minibatchSize) {
-	m_nParamSize = paramSize;
+linearReg::linearReg (ConfReader *confReader, int minibatchSize) {
+	m_nParamSize = confReader->getInt("parameter size");
 	m_nMinibatchSize = minibatchSize;
 }
 
@@ -62,10 +62,10 @@ void linearReg::initParams (float *params) {
 * Method definition for Softmax Classification
 ****************************************************************/
 
-softmax::softmax (int paramSize, int minibatchSize, int classNum) {
-	m_nParamSize = paramSize;
+softmax::softmax (ConfReader *confReader, int minibatchSize) {
+	m_nParamSize = confReader->getInt("parameter size");
+	m_nClassNum = confReader->getInt("softmax class num");
 	m_nMinibatchSize = minibatchSize;
-	m_nClassNum = classNum;
 }
 
 softmax::~softmax () {
