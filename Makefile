@@ -14,7 +14,7 @@ CXXFLAGS+=-O3 #-std=c++0x
 INCFLAGS+=$(foreach d, $(VPATH), -I$d)
 
 # link flags
-LDFLAGS+=-lpthread -lmpi -lmpi_cxx -Llib
+LDFLAGS+=-lpthread -lmpi -lmpi_cxx
 
 # vpath
 VPATH = $(SRCDIR) \
@@ -22,15 +22,16 @@ VPATH = $(SRCDIR) \
 	$(SRCDIR)/Data \
 	$(SRCDIR)/Master \
 	$(SRCDIR)/Model \
+	$(SRCDIR)/Model/NeuralNet \
 	$(SRCDIR)/SGD \
 	$(SRCDIR)/Slave \
 	
 # src files
 SRCS=\
+	parallelSGD.cpp \
 	Chameleon.cpp \
 	ConfigFile.cpp \
-	MasterConfig.cpp \
-	SlaveConfig.cpp \
+	confreader.cpp \
 	DataFactory.cpp \
 	TestData.cpp \
 	model.cpp \
@@ -40,7 +41,8 @@ SRCS=\
 	rmsprop.cpp \
 	master.cpp \
 	slave.cpp \
-	parallelSGD.cpp\
+	layer.cpp \
+	feed_forward_nn.cpp \
 	svm.cpp
 
 # obj files using patsubst matching
