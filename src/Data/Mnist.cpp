@@ -16,7 +16,7 @@ Mnist::Mnist(int ifTrain){
         labelName = "t10k-labels-idx1-ubyte";
         numData = 5000;
     }
-    dataVector = new unsigned int[numData * (numFet + 1)];
+    dataVector = new float[numData * (numFet + 1)];
     memset(dataVector,0,numData*(numFet+1));
     loadData();
 }
@@ -29,29 +29,14 @@ int Mnist::getNumberOfData(){
     return numData;
 }
 
-unsigned int Mnist::getDataByInde(int dataIndex, int fetIndex)
+float Mnist::getDataByIndex(int dataIndex, int fetIndex)
 {
    return(dataVector[ dataIndex * (numFet+1) + fetIndex ]);
 }
 
-unsigned int Mnist::swap(unsigned int d)
-{
-    unsigned int a;
-    unsigned char *dst = (unsigned char *)&a;
-    unsigned char *src = (unsigned char *)&d;
-    dst[0] = src[7];
-    dst[1] = src[6];
-    dst[2] = src[5];
-    dst[3] = src[4];
-    dst[4] = src[3];
-    dst[5] = src[2];
-    dst[6] = src[1];
-    dst[7] = src[0];
-    return a;
-}
 
 void Mnist::loadData(){
-    unsigned int temp;
+    float temp;
     uint8_t temp8;
     std::ifstream mnFer(dataName,std::ios::binary);
     std::ifstream mnLab(labelName,std::ios::binary);
@@ -88,23 +73,6 @@ void Mnist::getDataBatch(float* label, float* data, int* indexs, int num)
             label[i] = getDataByIndex(indexs[i], numFet);
         }
     }
-}
-
-void Mnist::printOutDataFromFile()
-{
-    std::ifstream ifs( dataName, std::ios::binary);
-    float read;
-    for (int i=0; i < numData; i++)
-    {
-        for (int j=0; j < numFet; j++)
-        {
-            ifs.read( reinterpret_cast<char*> (&read), sizeof(float) );
-            std::cout << read << ",";
-        }
-        ifs.read( reinterpret_cast<char*> (&read), sizeof(float) );
-        std::cout << read << std::endl;
-    }
-    ifs.close();
 }
 
 void Mnist::printOutDataFromData(){

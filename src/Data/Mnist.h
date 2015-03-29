@@ -7,11 +7,10 @@
 class Mnist:public DataFactory{
      private:
          std::string labelName; //the path of label file 
-         unsigned int* dataVector;
+         float* dataVector;
          void loadData();
      protected:
-         unsigned int getDataByInde(int,int);
-         unsigned int swap(unsigned int);
+         float getDataByIndex(int,int);
      public:
          Mnist(int);
          ~Mnist();
