@@ -39,28 +39,20 @@ unsigned int Mnist::swap(unsigned int d)
     unsigned int a;
     unsigned char *dst = (unsigned char *)&a;
     unsigned char *src = (unsigned char *)&d;
-    dst[0] = src[15];
-    dst[1] = src[14];
-    dst[2] = src[13];
-    dst[3] = src[12];
-    dst[4] = src[11];
-    dst[5] = src[10];
-    dst[6] = src[9];
-    dst[7] = src[8];
-    dst[8] = src[7];
-    dst[9] = src[6];
-    dst[10] = src[5];
-    dst[11] = src[4];
-    dst[12] = src[3];
-    dst[13] = src[2];
-    dst[14] = src[1];
-    dst[15] = src[0];
-
+    dst[0] = src[7];
+    dst[1] = src[6];
+    dst[2] = src[5];
+    dst[3] = src[4];
+    dst[4] = src[3];
+    dst[5] = src[2];
+    dst[6] = src[1];
+    dst[7] = src[0];
     return a;
 }
 
 void Mnist::loadData(){
     unsigned int temp;
+    uint8_t temp8;
     std::ifstream mnFer(dataName,std::ios::binary);
     std::ifstream mnLab(labelName,std::ios::binary);
     for(int i=0;i<2;i++){
@@ -71,12 +63,14 @@ void Mnist::loadData(){
     for (int i=0;i<numData;i++){
         for(int j=0;j<=numFet;j++){
             if(j==numFet){
-                mnLab.read(reinterpret_cast<char*>(&temp),sizeof(char));
-                dataVector[i*(numFet+1)+j] =swap(temp);
+                mnLab.read(reinterpret_cast<char*>(&temp8),sizeof(char));
+                temp = temp8;
+                dataVector[i*(numFet+1)+j] =(temp);
             }
             else{
-                mnFer.read(reinterpret_cast<char*>(&temp),sizeof(char));
-                dataVector[i*(numFet+1)+j] =swap(temp);
+                mnFer.read(reinterpret_cast<char*>(&temp8),sizeof(char));
+                temp = temp8;
+                dataVector[i*(numFet+1)+j] =(temp);
             }
         }
     }
@@ -116,7 +110,7 @@ void Mnist::printOutDataFromFile()
 void Mnist::printOutDataFromData(){
     for (int i=0;i<numData;i++){
         for(int j=0;j<numFet+1;j++){
-            std::cout << dataVector[i*numFet+j]<<",";
+            std::cout << dataVector[i*(numFet+1)+j]<<",";
         }
         std::cout<<std::endl;
     }
@@ -125,7 +119,7 @@ void Mnist::printOutDataFromData(){
 
 void Mnist::printLabel(){
     for(int i=1;i<numData+1;i++){
-        std::cout << dataVector[i*numFet-1]<<std::endl;
+        std::cout << dataVector[i*(numFet+1)-1]<<std::endl;
     }
     std::cout << numFet <<numData << std::endl;
 }
