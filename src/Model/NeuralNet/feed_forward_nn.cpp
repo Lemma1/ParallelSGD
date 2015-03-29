@@ -278,7 +278,9 @@ float feedForwardNN::computeGrad (float *grad, float *params, float *data, float
 		backProp(labelCursor);
 		for (int i=0; i<labelDim; i++) {
 			error += labelCursor[i] * log(m_softmaxLayer->m_activation[i]);
-		}		
+			printf("%f,%f\n",labelCursor[i],m_vecLayers[m_numLayer-1]->m_activation[i]);
+			// error += (labelCursor[i] - m_softmaxLayer->m_activation[i]) * (labelCursor[i] - m_softmaxLayer->m_activation[i]);
+		}
 		dataCursor += dataDim;
 		labelCursor += labelDim;
 	}	

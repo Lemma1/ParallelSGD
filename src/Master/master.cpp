@@ -9,7 +9,7 @@
 #include "svm.h"
 #include "neural_net.h"
 
-//#define DEBUG
+//#define DEBUG_MASTER
 
 modelBase * initModelMaster (ConfReader *modelConf, int validBatchSize) {
     int modelType = modelConf->getInt("model type");
@@ -93,12 +93,17 @@ void masterFunc () {
     // Step 1.1: Load configuration
     ConfReader *masterConf = new ConfReader("config.conf", "Master");
     int validBatchSize = masterConf->getInt("validation batch size");
+    #ifdef DEBUG_MASTER
+    printf("validBatchSize: %d\n", validBatchSize);
+    #endif
 
     // Step 1.2 Initialize model
     ConfReader *modelConf = new ConfReader("config.conf", "Model");
     modelBase *model = initModelMaster(modelConf, validBatchSize);
     int paramSize = model->m_nParamSize;
+    #ifdef DEBUG_MASTER
     printf("paramSize: %d\n", paramSize);
+    #endif
 
     // Step 1.3: Allocate master memory
     float *params = new float[paramSize];
@@ -114,7 +119,7 @@ void masterFunc () {
 	
     // Step 1.5: Initialize SGD Solver
     sgdBase *sgdSolver = initSgdSolver(masterConf, paramSize);
-    #ifdef DEBUG
+    #ifdef DEBUG_MASTER
     printf("MASTER: finish step 1\n");
     #endif
 
@@ -138,7 +143,7 @@ void masterFunc () {
         MPI_Send(params, paramSize, MPI_FLOAT, rank, WORKTAG, MPI_COMM_WORLD);
         nSend++;
     }
-    #ifdef DEBUG
+    #ifdef DEBUG_MASTER
     printf("MASTER: finish step 2\n");
     #endif
 
@@ -185,7 +190,7 @@ void masterFunc () {
         MPI_Send(params, paramSize, MPI_FLOAT, status.MPI_SOURCE, WORKTAG, MPI_COMM_WORLD);
         nSend++;
     }
-    #ifdef DEBUG
+    #ifdef DEBUG_MASTER
     printf("MASTER: finish step 3\n");
     #endif
     /****************************************************************
@@ -204,7 +209,7 @@ void masterFunc () {
         MPI_Send(&rank, 1, MPI_INT, rank, STOPTAG, MPI_COMM_WORLD);
     }
 
-    #ifdef DEBUG
+    #ifdef DEBUG_MASTER
     printf("MASTER: finish step 4\n");
     #endif
     /****************************************************************

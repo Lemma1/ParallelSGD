@@ -63,9 +63,12 @@ void slaveDo(){
     
     int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
-  //  dataInit(&dbSize,&batchSize);//TODO
+    //dataInit(&dbSize,&batchSize);//TODO
     ConfReader *slaveConf = new ConfReader("config.conf", "Slave");
     int batchSize = slaveConf->getInt("training batch size");
+    #ifdef DEBUG_SLAVE
+    printf("batchSize: %d\n", batchSize);
+    #endif
 
     MPI_Status status;
 	//step 1:: configulation
