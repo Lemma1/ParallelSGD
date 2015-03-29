@@ -5,6 +5,7 @@
 rmsprop::rmsprop (ConfReader *confReader, int paramSize) {
 	m_nParamSize = paramSize;
 	m_decayFactor = confReader->getFloat("rmsprop decay factor");
+	m_useMomentum  = confReader->getInt("use momentum");
 
 	m_meanSquareGrad  = new float [m_nParamSize];
 

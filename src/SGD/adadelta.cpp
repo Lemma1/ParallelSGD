@@ -6,6 +6,7 @@ adadelta::adadelta (ConfReader *confReader, int paramSize) {
 	m_nParamSize = paramSize;	
 	m_decayFactor = confReader->getFloat("adadelta decay factor");
 	m_stableConst = confReader->getFloat("adadelta stable const");
+	m_useMomentum  = confReader->getInt("use momentum");
 
 	m_ESquareGrad  = new float [m_nParamSize];
 	m_ESquareDelta = new float [m_nParamSize];

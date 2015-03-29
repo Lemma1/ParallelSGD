@@ -16,6 +16,7 @@ public:
     void virtual updateParams (float *params, float *grad) {};
 protected:
     /* data */
+    int m_useMomentum;
     int m_nParamSize;
     float m_learningRate;
 

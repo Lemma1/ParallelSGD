@@ -1,7 +1,7 @@
 #include <sstream> 
 #include "neural_net.h"
 
-feedForwardNN::feedForwardNN (ConfReader *confReader, int minibatchSize) {
+feedForwardNN::feedForwardNN (ConfReader *confReader, int minibatchSize) {	
 	m_nMinibatchSize = minibatchSize;
 
 	m_numLayer = confReader->getInt("num_layer");
@@ -50,8 +50,7 @@ feedForwardNN::feedForwardNN (ConfReader *confReader, int minibatchSize) {
 		m_nParamSize += fanIn*fanOut;
 	}
 
-
-
+	printf("Constructor feedForwardNN finished\n");
 }
 
 feedForwardNN::~feedForwardNN() {
@@ -192,6 +191,7 @@ void feedForwardNN::backProp (float *target) {
 
 	// for each connection
 	for (int connectIdx=m_numLayer-2; connectIdx>=0; --connectIdx) {
+		// printf("connectIdx: %d\n", connectIdx);
 		// get fanIn and fanOut
 		int fanIn = m_numNeuronList[connectIdx]+1;
 		int fanOut = m_numNeuronList[connectIdx+1];
@@ -206,11 +206,12 @@ void feedForwardNN::backProp (float *target) {
 		// create ptr to corresponding weightsGrad
 		weightsGrad = m_vecWeightsGrad[connectIdx];
 		
-		// create ptr to associated forwardInfo & clean the buffer
-		backpropInfo = m_vecForwardInfo[connectIdx];
+		// create ptr to associated backpropInfo & clean the buffer
+		backpropInfo = m_vecBackpropInfo[connectIdx];
 		memset(backpropInfo, 0x00, sizeof(float)*m_numNeuronList[connectIdx]);
 
 		// compute weightsGrad
+		// printf("compute weightsGrad\n");
 		for (int in=0; in<fanIn-1; in++) {
 			float inAct = inLayer->m_activation[in];
 			int wIdx = in * fanOut;
@@ -219,12 +220,14 @@ void feedForwardNN::backProp (float *target) {
 			}
 		}
 		// weightsGrad for bias term
+		// printf("weightsGrad for bias term\n");
 		int wIdx = (fanIn-1) * fanOut;
 		for (int out=0; out<fanOut; out++) {
 			weightsGrad[wIdx+out] += outLayer->m_delta[out];
 		}
 		
 		// compute backpropInfo
+		// printf("compute backpropInfo\n");
 		for (int in=0; in<fanIn-1; in++) {
 			int wIdx = in * fanOut;
 			for (int out=0; out<fanOut; out++) {
@@ -242,6 +245,7 @@ void feedForwardNN::backProp (float *target) {
 
 float feedForwardNN::computeGrad (float *grad, float *params, float *data, float *label) {
 	// bind weights
+	// printf("Bind weights\n");
 	float *paramsCursor = params;
 	for (int connectIdx=0; connectIdx<m_numLayer-1; ++connectIdx) {
 		int fanIn = m_numNeuronList[connectIdx]+1;
@@ -254,6 +258,7 @@ float feedForwardNN::computeGrad (float *grad, float *params, float *data, float
 	}
 
 	// clean the grad buffer and bind it to 
+	// printf("Bind weights grad\n");
 	memset(grad, 0x00, sizeof(float)*m_nParamSize);
 	float *gradCursor = grad;
 	for (int connectIdx=0; connectIdx<m_numLayer-1; ++connectIdx) {
@@ -270,20 +275,38 @@ float feedForwardNN::computeGrad (float *grad, float *params, float *data, float
 	int dataDim = m_numNeuronList[0];
 	int labelDim = m_numNeuronList[m_numLayer-1];
 	float *dataCursor = data;
-	float *labelCursor = label;
+	float *oneOnlabel = new float[dataDim];
+	int labelInt;
 	float error = 0.f;
-	
-	for (int dataIdx=0; dataIdx<m_nMinibatchSize; dataIdx++) {
-		feedForward(dataCursor);				
-		backProp(labelCursor);
-		for (int i=0; i<labelDim; i++) {
-			error += labelCursor[i] * log(m_softmaxLayer->m_activation[i]);
-			printf("%f,%f\n",labelCursor[i],m_vecLayers[m_numLayer-1]->m_activation[i]);
-			// error += (labelCursor[i] - m_softmaxLayer->m_activation[i]) * (labelCursor[i] - m_softmaxLayer->m_activation[i]);
-		}
-		dataCursor += dataDim;
-		labelCursor += labelDim;
-	}	
+	float correctCount = 0.f;
 
+	for (int dataIdx=0; dataIdx<m_nMinibatchSize; dataIdx++) {
+		labelInt = (int)label[dataIdx];
+		memset(oneOnlabel, 0x00, sizeof(float)*labelDim);
+		oneOnlabel[labelInt] = 1.f;
+		feedForward(dataCursor);
+		backProp(oneOnlabel);
+		float maxP = 0.f;
+		int maxIndex = -1;
+		for (int i=0; i<labelDim; i++) {
+			error += - oneOnlabel[i] * log(m_softmaxLayer->m_activation[i]);
+			if (m_softmaxLayer->m_activation[i] > maxP) {
+				maxP = m_softmaxLayer->m_activation[i];
+				maxIndex = i;
+			}			
+		}
+		if (maxIndex == labelInt) {
+			correctCount ++;
+		}
+		dataCursor += dataDim;		
+	}
+	printf("Error: %f\n", error / m_nMinibatchSize);
+	printf("Correct rate: %f\n", correctCount / m_nMinibatchSize);
+
+	for (int dim=0; dim<m_nParamSize; ++dim) {
+		grad[dim] /= m_nMinibatchSize;
+	}
+
+	delete [] oneOnlabel;
 	return error;
 }

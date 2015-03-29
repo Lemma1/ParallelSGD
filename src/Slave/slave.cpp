@@ -9,6 +9,7 @@
 #include "TestData.h"
 #include "DataFactory.h"
 #include "confreader.h"
+#include "Mnist.h"
 /*
 #include "../Model/model.h"
 #include "../Data/TestData.h"
@@ -59,7 +60,8 @@ modelBase * initModelSlave (ConfReader *modelConf, int batchSize) {
 
 void slaveDo(){
     //step 0:init the data in local memory
-    DataFactory *dataset = new TestData();
+    // DataFactory *dataset = new TestData();
+    DataFactory *dataset = new Mnist(1);
     
     int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
@@ -96,11 +98,13 @@ void slaveDo(){
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int count = 0;
     int indexI = 0;
+    printf("Slave[%d] go into loop\n", rank);
 	//main loop
     while(1){
 		/*step 2:receive from master*/
 		MPI_Recv(param,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
         count++;
+        // printf("%d:%d\n", rank, count);
         
 		/*step 3: check whether ends*/
 		if(status.MPI_TAG == STOPTAG){
@@ -116,11 +120,11 @@ void slaveDo(){
         for(int i=0;i<batchSize;i++){
             pickIndex[i] = index[indexI];
             indexI++;
-        }
-        dataset->getDataBatch(label, data, pickIndex, batchSize);    
+        }        
+        dataset->getDataBatch(label, data, pickIndex, batchSize);        
         // dataset->printOutData();
 
-        /*step 5: calculate the grad*/
+        /*step 5: calculate the grad*/        
         float cost = model->computeGrad(grad, param, data, label);
         // printf("MASTER: check grad\n");
         // for (int i = 0; i < paramSize; i++) {

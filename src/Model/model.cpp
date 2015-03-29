@@ -33,6 +33,7 @@ float linearReg::computeGrad (float *grad, float *params, float *data, float *la
 		predict = 0.f;
 		for (int dim=0; dim<m_nParamSize; dim++) {
 			predict += params[dim] * data[sampleOffset + dim];
+			printf("%d,%d:%f\n",sample, dim, data[sampleOffset + dim]);
 		}
 
 		diff = predict - label[sample];

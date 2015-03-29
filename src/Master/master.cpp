@@ -9,7 +9,7 @@
 #include "svm.h"
 #include "neural_net.h"
 
-//#define DEBUG_MASTER
+// #define DEBUG_MASTER
 
 modelBase * initModelMaster (ConfReader *modelConf, int validBatchSize) {
     int modelType = modelConf->getInt("model type");
@@ -101,9 +101,7 @@ void masterFunc () {
     ConfReader *modelConf = new ConfReader("config.conf", "Model");
     modelBase *model = initModelMaster(modelConf, validBatchSize);
     int paramSize = model->m_nParamSize;
-    #ifdef DEBUG_MASTER
-    printf("paramSize: %d\n", paramSize);
-    #endif
+    printf("paramSize: %d\n", paramSize);    
 
     // Step 1.3: Allocate master memory
     float *params = new float[paramSize];
@@ -111,17 +109,17 @@ void masterFunc () {
 
     // Step 1.4: Initialize params
     model->initParams(params);
+    #ifdef DEBUG_MASTER
     printf("MASTER: check initialized params\n");
     for (int i = 0; i < paramSize; i++) {
         printf("%f\t", params[i]);
     }
     printf("\n");
+    #endif
 	
     // Step 1.5: Initialize SGD Solver
     sgdBase *sgdSolver = initSgdSolver(masterConf, paramSize);
-    #ifdef DEBUG_MASTER
     printf("MASTER: finish step 1\n");
-    #endif
 
     // Step 1.6: Load cross-validation data
     // loadData();
@@ -142,10 +140,8 @@ void masterFunc () {
     for (int rank = 1; rank < nProc; ++rank) {
         MPI_Send(params, paramSize, MPI_FLOAT, rank, WORKTAG, MPI_COMM_WORLD);
         nSend++;
-    }
-    #ifdef DEBUG_MASTER
+    }    
     printf("MASTER: finish step 2\n");
-    #endif
 
     /****************************************************************
     * Step 3: Paralleled training
@@ -189,10 +185,9 @@ void masterFunc () {
         // Send updated params to corresponding slave
         MPI_Send(params, paramSize, MPI_FLOAT, status.MPI_SOURCE, WORKTAG, MPI_COMM_WORLD);
         nSend++;
-    }
-    #ifdef DEBUG_MASTER
+    }    
     printf("MASTER: finish step 3\n");
-    #endif
+    
     /****************************************************************
 	* Step 4: Stop the slaves
 	****************************************************************/
@@ -207,19 +202,19 @@ void masterFunc () {
     // Step 4.2: Send STOPTAG to all slaves
     for (int rank = 1; rank < nProc; ++rank) {
         MPI_Send(&rank, 1, MPI_INT, rank, STOPTAG, MPI_COMM_WORLD);
-    }
-
-    #ifdef DEBUG_MASTER
+    }    
     printf("MASTER: finish step 4\n");
-    #endif
+    
     /****************************************************************
     * Step 5: deallocate mem and clear things
     ****************************************************************/
+    #ifdef DEBUG_MASTER
     printf("MASTER: check trained params\n");
     for (int i = 0; i < paramSize; i++) {
         printf("%f\t", params[i]);
     }
     printf("\n");
+    #endif
 
     delete sgdSolver;
 

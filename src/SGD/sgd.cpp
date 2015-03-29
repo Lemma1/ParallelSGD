@@ -3,6 +3,7 @@
 sgdBasic::sgdBasic (ConfReader *confReader, int paramSize) {
 	m_nParamSize = paramSize;
 	m_learningRate = confReader->getFloat("learning rate");
+	m_useMomentum  = confReader->getInt("use momentum");
 }
 
 sgdBasic::~sgdBasic () {

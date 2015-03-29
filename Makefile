@@ -34,6 +34,7 @@ SRCS=\
 	confreader.cpp \
 	DataFactory.cpp \
 	TestData.cpp \
+	Mnist.cpp \
 	model.cpp \
 	sgd.cpp \
 	adagrad.cpp \
