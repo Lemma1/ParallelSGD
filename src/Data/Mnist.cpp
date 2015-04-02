@@ -38,8 +38,8 @@ float Mnist::getDataByIndex(int dataIndex, int fetIndex)
 void Mnist::loadData(){
     float temp;
     uint8_t temp8;
-    std::ifstream mnFer(dataName,std::ios::binary);
-    std::ifstream mnLab(labelName,std::ios::binary);
+    std::ifstream mnFer(dataName.c_str(),std::ios::binary);
+    std::ifstream mnLab(labelName.c_str(),std::ios::binary);
     for(int i=0;i<2;i++){
         mnLab.read(reinterpret_cast<char*>(&temp),sizeof(int));
         mnFer.read(reinterpret_cast<char*>(&temp),sizeof(int));
