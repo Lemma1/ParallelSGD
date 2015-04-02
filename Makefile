@@ -35,6 +35,7 @@ SRCS=\
 	DataFactory.cpp \
 	TestData.cpp \
 	Mnist.cpp \
+	binary.cpp \
 	model.cpp \
 	sgd.cpp \
 	adagrad.cpp \

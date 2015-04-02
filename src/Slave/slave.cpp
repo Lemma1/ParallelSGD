@@ -10,6 +10,7 @@
 #include "DataFactory.h"
 #include "confreader.h"
 #include "Mnist.h"
+#include "binary.h"
 /*
 #include "../Model/model.h"
 #include "../Data/TestData.h"
@@ -61,7 +62,7 @@ modelBase * initModelSlave (ConfReader *modelConf, int batchSize) {
 void slaveDo(){
     //step 0:init the data in local memory
     // DataFactory *dataset = new TestData();
-    DataFactory *dataset = new Mnist(1);
+    DataFactory *dataset = new BinaryData();
     
     int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
@@ -122,7 +123,7 @@ void slaveDo(){
             indexI++;
         }        
         dataset->getDataBatch(label, data, pickIndex, batchSize);        
-        // dataset->printOutData();
+        //dataset->printOutData();
 
         /*step 5: calculate the grad*/        
         float cost = model->computeGrad(grad, param, data, label);
