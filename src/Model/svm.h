@@ -15,5 +15,7 @@ class modelSVM :public modelBase
 	/* method */
 	float computeGrad (float *grad, float *params, float *data, float *label);
 	// label need to be +- 1
+	void initParams (float *params);
+
 };
 #endif

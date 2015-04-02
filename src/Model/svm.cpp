@@ -1,6 +1,7 @@
 #include "svm.h"
 
 #include <algorithm>
+#include <iostream>
 
 modelSVM::modelSVM(ConfReader *confReader, int minibatchSize)
 {
@@ -17,32 +18,40 @@ modelSVM::~modelSVM()
 float modelSVM::computeGrad (float *grad, float *params, float *data, float *label)
 {
     float cost = 0.f;
-    float predict;
+    float predict, f_label;
     int offset;
+    float correct_counter = 0.f;
     memset(grad, 0x00, sizeof(float) * m_nParamSize); 
-   
-    float target; //y_t * w^T * x^t
-    predict = 0.f; //w^T * x^t
+    float target; //y_t * w^T * x_t
+    
     // Accumulate cost and grad
     for (int i=0; i < m_nMinibatchSize; i++)
     {
 	offset = i * m_nParamSize;	
+	predict = 0.f; //w^T * x^t
 	for (int j=0; j < m_nParamSize; j++)
 	{
 	    predict += data[offset+j] * params[j];
 	}
-	target = label[i] * predict;
+	//printf("predict : %f \n", predict);
+	f_label = static_cast<float>(label[i]);
+	target = f_label * predict;
+	if (target > 0) correct_counter++;
+	//std::cout << "target" << target << std::endl;
 	if (target > 1)
 	{
-	    for (int j=0; j < m_nParamSize; j++) grad[j] += svm_lambda * grad[j];
+	    for (int j=0; j < m_nParamSize; j++) grad[j] += svm_lambda * params[j];
 	}
 	else
 	{
 	    for (int j=0; j < m_nParamSize; j++) 
 	    {
-		grad[j] += svm_lambda * grad[j] - label[i] * params[j];
+		grad[j] += svm_lambda * params[j] - f_label * data[offset+j];
 	    }
 	}
+	//printf("Iteration %d", i);
+	//for (int j=0; j < m_nParamSize; j++) printf("%f,",grad[j]);
+	//printf("\n");
 	
 	//accumulative cost
 	//obj = lambda * w^2 + max(0, 1-target)
@@ -55,7 +64,20 @@ float modelSVM::computeGrad (float *grad, float *params, float *data, float *lab
 
     //average grad (maybe not used)
     float f_minibatchSize = static_cast<float>(m_nMinibatchSize);
-    for (int j=0; j < m_nParamSize; j++) grad[j] /= f_minibatchSize;
-
+    for (int j=0; j < m_nParamSize; j++) 
+    {
+    	grad[j] /= f_minibatchSize;
+    }
+    //printf("Correct Number: %d \n", static_cast<int> (correct_counter));
+    //std::cout << "Correct rate: " << correct_counter/f_minibatchSize << std::endl;
+    std::cout << correct_counter/f_minibatchSize << std::endl;
     return cost;
+}
+
+void modelSVM::initParams (float *params)
+{
+    for (int i=0; i<m_nParamSize; i++)
+    {
+	params[i] = static_cast<float>(rand())/RAND_MAX; 
+    }
 }
