@@ -55,6 +55,40 @@ modelBase * initModelSlave (ConfReader *modelConf, int batchSize) {
     return model;
 }
 
+//Wei MA
+//Use init function to initialize the datafactory
+DataFactory* initDataFactory()
+{
+    int dataIndex = modelConf->getInt("data index");
+    DataFactory* data;
+    switch(dataIndex)
+    {
+	//linear data
+	case 1: 
+	    {	
+		printf("Slave Model: Init Linear Data.\n");
+		data = new TestData();
+	    }
+	case 2: 
+	    {	
+		printf("Slave Model: Init Minst Data.\n");
+		data = new Minst();
+	    }
+	case 3: 
+	    {	
+		printf("Slave Model: Init Binary Data.\n");
+		data = new BinaryData();
+	    }
+	default: 
+	    {
+		printf("Error, no Data Index");
+		exit(-1);
+	    }
+	return data;
+
+    }
+
+}
 //random pick the data 
 //the main function of slaves
 
