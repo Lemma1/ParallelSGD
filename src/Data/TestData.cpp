@@ -19,7 +19,7 @@ TestData::~TestData()
 
 void TestData::printOutData()
 {
-    std::ifstream ifs( dataName, std::ios::binary);
+    std::ifstream ifs( dataName.c_str(), std::ios::binary);
     float read;
     for (int i=0; i < numData; i++)
     {
@@ -36,7 +36,7 @@ void TestData::printOutData()
 
 void TestData::loadData()
 {
-    std::ifstream ifs( dataName, std::ios::binary);
+    std::ifstream ifs( dataName.c_str(), std::ios::binary);
     float read;
     for (int i=0; i < numData; i++)
     {

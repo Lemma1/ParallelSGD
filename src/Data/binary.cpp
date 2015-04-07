@@ -24,7 +24,7 @@ void BinaryData::loadData()
     int* templist = new int[2];
     int linecounter = 0;
     int offset;
-    std::ifstream bn(dataName, std::ios::in);
+    std::ifstream bn(dataName.c_str(), std::ios::in);
     if (bn.good())
     {
 	std::string line;

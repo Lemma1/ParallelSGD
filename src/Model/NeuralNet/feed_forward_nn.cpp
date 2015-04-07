@@ -281,11 +281,19 @@ float feedForwardNN::computeGrad (float *grad, float *params, float *data, float
 	float correctCount = 0.f;
 
 	for (int dataIdx=0; dataIdx<m_nMinibatchSize; dataIdx++) {
-		labelInt = (int)label[dataIdx];
+		// produce one-on label representation
 		memset(oneOnlabel, 0x00, sizeof(float)*labelDim);
+		labelInt = (int)label[dataIdx];
+		if (labelInt < 0) {
+			labelInt = 0;
+		}
 		oneOnlabel[labelInt] = 1.f;
+		
+		// feedforward and backpropagation
 		feedForward(dataCursor);
 		backProp(oneOnlabel);
+
+		// compute some statistics
 		float maxP = 0.f;
 		int maxIndex = -1;
 		for (int i=0; i<labelDim; i++) {
@@ -298,6 +306,8 @@ float feedForwardNN::computeGrad (float *grad, float *params, float *data, float
 		if (maxIndex == labelInt) {
 			correctCount ++;
 		}
+
+		// move the dataCursor
 		dataCursor += dataDim;		
 	}
 	printf("Error: %f\n", error / m_nMinibatchSize);
