@@ -49,7 +49,7 @@ void kernelAdadelta::updateParams (float *params, float *grad, int rank) {
 	float delta;		
 
 	for (int slaveId=1; slaveId<=m_nSlave; slaveId++) {
-		m_factor[slaveId] *= (1 - m_decayFactor);
+		m_factor[slaveId] *= m_decayFactor;
 	}
 
 	for (int i=0; i<m_nParamSize; i++) {
@@ -58,6 +58,7 @@ void kernelAdadelta::updateParams (float *params, float *grad, int rank) {
 		m_ESquareGrad[i] = m_decayFactor * m_ESquareGrad[i] + (1 - m_decayFactor) * gradSqr_i;
 		for (int slaveId=1; slaveId<=m_nSlave; slaveId++) {		
 			m_mapESquareGrad[slaveId][i] += m_factor[slaveId] * gradSqr_i;
+			m_mapESquareGrad[slaveId][i] *= 0.8;
 		}
 
 		// compute delta
@@ -69,6 +70,7 @@ void kernelAdadelta::updateParams (float *params, float *grad, int rank) {
 		m_ESquareDelta[i] = m_decayFactor * m_ESquareDelta[i] + (1 - m_decayFactor) * deltaSqr_i;
 		for (int slaveId=1; slaveId<=m_nSlave; slaveId++) {		
 			m_mapESquareDelta[slaveId][i] += m_factor[slaveId] * deltaSqr_i;
+			m_mapESquareDelta[slaveId][i] *= 0.8;
 		}
 	}
 
