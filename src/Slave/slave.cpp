@@ -57,56 +57,53 @@ modelBase * initModelSlave (ConfReader *modelConf, int batchSize) {
 
 //Wei MA
 //Use init function to initialize the datafactory
-DataFactory* initDataFactory()
+DataFactory* initDataFactory(ConfReader *slaveConf)
 {
-    int dataIndex = modelConf->getInt("data index");
+    int dataIndex = slaveConf->getInt("data index");
     DataFactory* data;
     switch(dataIndex)
     {
 	//linear data
 	case 1: 
 	    {	
-		printf("Slave Model: Init Linear Data.\n");
+		printf("Slave Data: Init Linear Data.\n");
 		data = new TestData();
+        break;
 	    }
 	case 2: 
 	    {	
-		printf("Slave Model: Init Minst Data.\n");
-		data = new Minst();
+		printf("Slave Data: Init Minst Data.\n");
+		data = new Mnist(1);
+        break;
 	    }
 	case 3: 
 	    {	
-		printf("Slave Model: Init Binary Data.\n");
+		printf("Slave Data: Init Binary Data.\n");
 		data = new BinaryData();
+        break;
 	    }
 	default: 
 	    {
 		printf("Error, no Data Index");
 		exit(-1);
 	    }
-	return data;
-
     }
-
+    return data;
 }
 //random pick the data 
 //the main function of slaves
 
 
 void slaveDo(){
-    //step 0:init the data in local memory
-    // DataFactory *dataset = new TestData();
-    // DataFactory *dataset = new BinaryData();
-    DataFactory *dataset = new Mnist(1);
-    
-    int dbSize = dataset->getNumberOfData();// define in slave.h or ?
-    
-    //dataInit(&dbSize,&batchSize);//TODO
+    //step 0:init the data in local memory    
     ConfReader *slaveConf = new ConfReader("config.conf", "Slave");
     int batchSize = slaveConf->getInt("training batch size");
     #ifdef DEBUG_SLAVE
     printf("batchSize: %d\n", batchSize);
     #endif
+
+    DataFactory *dataset = initDataFactory(slaveConf);
+    int dbSize = dataset->getNumberOfData();// define in slave.h or ?
 
     MPI_Status status;
 	//step 1:: configulation
