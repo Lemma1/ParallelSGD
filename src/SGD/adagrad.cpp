@@ -19,7 +19,7 @@ adagrad::~adagrad () {
 	}
 }
 
-void adagrad::updateParams (float *params, float *grad) {
+void adagrad::updateParams (float *params, float *grad, int rank) {
 	for (int i=0; i<m_nParamSize; i++) {
 		m_histSquareGrad[i] += grad[i] * grad[i];
 		params[i] -= m_learningRate * grad[i] / sqrt(m_histSquareGrad[i]);		

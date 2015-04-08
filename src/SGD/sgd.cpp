@@ -10,7 +10,7 @@ sgdBasic::~sgdBasic () {
 	// nothing to do for basic sgd
 }
 
-void sgdBasic::updateParams (float *params, float *grad) {
+void sgdBasic::updateParams (float *params, float *grad, int rank) {
 	for (int i=0; i<m_nParamSize; i++) {
 		params[i] -= m_learningRate * grad[i];
 	}

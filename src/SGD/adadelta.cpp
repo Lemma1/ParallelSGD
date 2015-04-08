@@ -24,7 +24,7 @@ adadelta::~adadelta () {
 	}
 }
 
-void adadelta::updateParams (float *params, float *grad) {
+void adadelta::updateParams (float *params, float *grad, int rank) {
 	float delta;
 	for (int i=0; i<m_nParamSize; i++) {
 		// accumulate mean squared grad

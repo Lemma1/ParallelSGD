@@ -2,18 +2,20 @@
 #define __SGD_H__
 
 #include <stdio.h>
+#include <map>
 #include "confreader.h"
 
 class sgdBase
 {
 public:
     sgdBase() {};
-    ~sgdBase() {};
+    virtual ~sgdBase() {};
 
     /* data */
 
     /* method */
-    void virtual updateParams (float *params, float *grad) {};
+    void virtual updateParams (float *params, float *grad, int rank) {};
+
 protected:
     /* data */
     int m_useMomentum;
@@ -36,7 +38,7 @@ public:
     /* data */
 
     /* method */
-    void updateParams (float *params, float *grad);
+    void updateParams (float *params, float *grad, int rank);
 };
 
 /****************************************************************
@@ -51,7 +53,7 @@ public:
     /* data */
 
     /* method */
-    void updateParams (float *params, float *grad);
+    void updateParams (float *params, float *grad, int rank);
 
 private:
     /* data */
@@ -70,7 +72,7 @@ public:
     /* data */
 
     /* method */
-    void updateParams (float *params, float *grad);
+    void updateParams (float *params, float *grad, int rank);
 
 private:
     /* data */
@@ -78,7 +80,36 @@ private:
     float m_stableConst;
 
     float *m_ESquareGrad;
+    float *m_ESquareDelta;    
+};
+
+/****************************************************************
+* KERNEL ADADELTA
+****************************************************************/
+class kernelAdadelta: public sgdBase
+{
+public:
+    kernelAdadelta(ConfReader *confReader, int paramSize);
+    ~kernelAdadelta();
+
+    /* data */
+
+    /* method */
+    void updateParams (float *params, float *grad, int rank);
+
+private:
+    /* data */
+    int m_nSlave;
+
+    float m_decayFactor;
+    float m_stableConst;
+
+    float *m_ESquareGrad;
     float *m_ESquareDelta;
+
+    std::map<int, float> m_factor;
+    std::map<int, float*> m_mapESquareGrad;
+    std::map<int, float*> m_mapESquareDelta;
 };
 
 /****************************************************************
@@ -93,7 +124,7 @@ public:
     /* data */
 
     /* method */
-    void updateParams (float *params, float *grad);
+    void updateParams (float *params, float *grad, int rank);
 
 private:
     /* data */

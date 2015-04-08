@@ -27,7 +27,7 @@ public:
 
 	/* method */
 	float computeGrad (float *grad, float *params, float *data, float *label);
-	void initParams (float *params);	
+	void initParams (float *params);
 
 private:
 	layerBase *initLayer (int numNeuron, int layerType);

@@ -18,7 +18,7 @@ rmsprop::~rmsprop () {
 	}
 }
 
-void rmsprop::updateParams (float *params, float *grad) {
+void rmsprop::updateParams (float *params, float *grad, int rank) {
 	float delta;
 	for (int i=0; i<m_nParamSize; i++) {
 		// accumulate mean squared grad

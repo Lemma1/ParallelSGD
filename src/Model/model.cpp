@@ -1,4 +1,5 @@
 #include "model.h"
+#include <time.h>
 
 /****************************************************************
 * Method definition for Linear Regression
@@ -55,6 +56,7 @@ float linearReg::computeGrad (float *grad, float *params, float *data, float *la
 }
 
 void linearReg::initParams (float *params) {
+	srand (time(NULL));
 	for (int i=0; i<m_nParamSize; i++) {
         params[i] = SYM_UNIFORM_RAND;
     }

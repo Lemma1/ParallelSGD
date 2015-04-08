@@ -70,9 +70,15 @@ sgdBase * initSgdSolver (ConfReader *confReader, int paramSize) {
             break;
         }
         // rmsprop
-        case 3: {             
+        case 3: {
             sgdSolver = new rmsprop(confReader, paramSize);
             printf("Init rmsprop solver.\n");
+            break;
+        }
+        // kernel adadelta
+        case 4: {
+            sgdSolver = new kernelAdadelta(confReader, paramSize);
+            printf("Init kernel adadelta solver.\n");
             break;
         }
         default: {
@@ -140,7 +146,7 @@ void masterFunc () {
     for (int rank = 1; rank < nProc; ++rank) {
         MPI_Send(params, paramSize, MPI_FLOAT, rank, WORKTAG, MPI_COMM_WORLD);
         nSend++;
-    }    
+    }
     printf("MASTER: finish step 2\n");
 
     /****************************************************************
@@ -155,7 +161,7 @@ void masterFunc () {
     
     // TEMP while loop condition
     while (nSend < nSendMax) {        
-        MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);        
         nRecv++;
         // printf("MASTER: check recv grad\n");
         // for (int i = 0; i < paramSize; i++) {
@@ -168,7 +174,7 @@ void masterFunc () {
         //     printf("%f\t", grad[i]);
         // }
         // printf("\n");
-    	sgdSolver->updateParams(params, grad);
+    	sgdSolver->updateParams(params, grad, status.MPI_SOURCE);
 
         // Check recv tag (eg. local new epoch info)
         // if (status.MPI_TAG == SOME_TAG) {}
@@ -196,7 +202,7 @@ void masterFunc () {
     while (nRecv < nSend) {
         // printf("Master, nSend:%d, nRecv:%d\n", nSend, nRecv);
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        sgdSolver->updateParams(params, grad);
+        sgdSolver->updateParams(params, grad, status.MPI_SOURCE);
         nRecv++;
     }
     // Step 4.2: Send STOPTAG to all slaves

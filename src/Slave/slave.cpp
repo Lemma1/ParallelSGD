@@ -62,7 +62,8 @@ modelBase * initModelSlave (ConfReader *modelConf, int batchSize) {
 void slaveDo(){
     //step 0:init the data in local memory
     // DataFactory *dataset = new TestData();
-    DataFactory *dataset = new BinaryData();
+    // DataFactory *dataset = new BinaryData();
+    DataFactory *dataset = new Mnist(1);
     
     int dbSize = dataset->getNumberOfData();// define in slave.h or ?
     
