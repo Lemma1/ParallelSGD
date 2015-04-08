@@ -72,5 +72,7 @@ void kernelAdadelta::updateParams (float *params, float *grad, int rank) {
 		}
 	}
 
+	memcpy(m_mapESquareGrad[rank], m_ESquareGrad, sizeof(float)*m_nParamSize);
+	memcpy(m_mapESquareDelta[rank], m_ESquareDelta, sizeof(float)*m_nParamSize);
 	m_factor[rank] = (1 - m_decayFactor);
 }
