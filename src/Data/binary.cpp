@@ -1,5 +1,5 @@
 #include "binary.h"
-
+#include <stdlib.h>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -34,7 +34,7 @@ void BinaryData::loadData()
 	    std::istringstream ss(line);
 	    std::string word;
 	    ss >> word;
-	    dataVector[offset + numFet] = std::stoi(word, nullptr, 10);
+	    dataVector[offset + numFet] = atoi(word.c_str());
 	    while(ss >> word)
 	    {
 		parseWord(templist, word);
@@ -88,7 +88,7 @@ void BinaryData::parseWord(int* list, std::string word)
     while(std::getline(ss, token, ':'))	    
     {
 	//std::cout << token << '\n';
-	list[counter] = std::stoi(token, nullptr, 10);
+	list[counter] = atoi(token.c_str());
 	counter++;
     }
 }
