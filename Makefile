@@ -1,7 +1,6 @@
 # dirs
 OBJDIR=objs
 SRCDIR=src
-INCDIR=$(VPATH)
 
 # compiler
 CXX=mpic++
@@ -25,32 +24,34 @@ VPATH = $(SRCDIR) \
 	$(SRCDIR)/Model/NeuralNet \
 	$(SRCDIR)/SGD \
 	$(SRCDIR)/Slave \
-	
+
+	INCDIR=$(VPATH)
+
 # src files
 SRCS=\
 	parallelSGD.cpp \
-	Chameleon.cpp \
-	ConfigFile.cpp \
-	confreader.cpp \
-	DataFactory.cpp \
-	TestData.cpp \
-	Mnist.cpp \
-	binary.cpp \
-	model.cpp \
-	sgd.cpp \
-	adagrad.cpp \
-	adadelta.cpp \
-	kernel_adadelta.cpp \
-	delayed_adagrad.cpp \
-	rmsprop.cpp \
-	master.cpp \
-	slave.cpp \
-	layer.cpp \
-	feed_forward_nn.cpp \
-	svm.cpp
+	$(SRCDIR)/Config/Chameleon.cpp \
+	$(SRCDIR)/Config/ConfigFile.cpp \
+	$(SRCDIR)/Config/confreader.cpp \
+	$(SRCDIR)/Data/DataFactory.cpp \
+	$(SRCDIR)/Data/TestData.cpp \
+	$(SRCDIR)/Data/Mnist.cpp \
+	$(SRCDIR)/Data/binary.cpp \
+	$(SRCDIR)/Model/model.cpp \
+	$(SRCDIR)/SGD/sgd.cpp \
+	$(SRCDIR)/SGD/adagrad.cpp \
+	$(SRCDIR)/SGD/adadelta.cpp \
+	$(SRCDIR)/SGD/kernel_adadelta.cpp \
+	$(SRCDIR)/SGD/delayed_adagrad.cpp \
+	$(SRCDIR)/SGD/rmsprop.cpp \
+	$(SRCDIR)/Master/master.cpp \
+	$(SRCDIR)/Slave/slave.cpp \
+	$(SRCDIR)/Model/NeuralNet/layer.cpp \
+	$(SRCDIR)/Model/NeuralNet/feed_forward_nn.cpp \
+	$(SRCDIR)/Model/svm.cpp 
 
 # obj files using patsubst matching
-OBJS=$(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
+OBJS=$(SRCS:%.cpp=%.o)
 
 # nothing to do here
 # .PHONY: 
@@ -60,7 +61,7 @@ all : parallelSGD
 
 # run the program
 run : parallelSGD
-	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 4 parallelSGD
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 20 parallelSGD
 
 # compile main program parallelSGD from all objs 
 parallelSGD: $(OBJS)
@@ -72,10 +73,9 @@ $(OBJDIR):
 	mkdir -p $@
 
 # compile all objs from corresponding %.cpp file and all other *.h files
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/*.h
+%.o: %.cpp 
 	$(CXX) $(CPPFLAGS) $(INCFLAGS) $(CXXFLAGS) $< -c -o $@
 
 # clean
 clean:
-	rm -rf $(OBJDIR) parallelSGD
-
+	rm -rf $(OBJS) parallelSGD
