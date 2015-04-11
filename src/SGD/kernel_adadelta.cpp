@@ -1,5 +1,4 @@
 #include <math.h>
-#include <mpi.h>
 #include <string.h>
 #include "sgd.h"
 
