@@ -24,4 +24,5 @@ void adagrad::updateParams (float *params, float *grad, int rank) {
 		m_histSquareGrad[i] += grad[i] * grad[i];
 		params[i] -= m_learningRate * grad[i] / sqrt(m_histSquareGrad[i]);		
 	}
+	printInfo(m_histSquareGrad);
 }

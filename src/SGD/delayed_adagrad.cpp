@@ -29,12 +29,17 @@ delayedAdagrad::~delayedAdagrad () {
 	if (!m_histSquareGrad) {
 		delete [] m_histSquareGrad;
 	}
+	for (int i=1; i<=m_nSlave; ++i) {    	
+    	delete [] m_mapHistSquareGrad[i];
+    }
 }
 
 void delayedAdagrad::updateParams (float *params, float *grad, int rank) {
 	for (int i=0; i<m_nParamSize; i++) {
 		m_histSquareGrad[i] += grad[i] * grad[i];
-		params[i] -= m_learningRate * grad[i] / sqrt(m_mapHistSquareGrad[rank][i] + grad[i] * grad[i]);		
+		m_mapHistSquareGrad[rank][i] += grad[i] * grad[i];
+		params[i] -= m_learningRate * grad[i] / sqrt(m_mapHistSquareGrad[rank][i]);
 	}
+	printInfo(m_mapHistSquareGrad[rank]);
 	memcpy(m_mapHistSquareGrad[rank], m_histSquareGrad, sizeof(float) * m_nParamSize);
 }

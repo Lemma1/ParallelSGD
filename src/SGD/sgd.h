@@ -25,6 +25,13 @@ protected:
 
     /* method */
     //TODO void truncate (float);
+    void printInfo (float *buffer) {
+        float sum = 0.f;
+        for (int i=0; i<m_nParamSize; ++i) {
+            sum += buffer[i];
+        }
+        printf("sum: %f\n", sum);
+    }
 };
 
 /****************************************************************
