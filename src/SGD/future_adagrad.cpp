@@ -36,7 +36,7 @@ void futureAdagrad::updateParams (float *params, float *grad, int rank) {
 	for (int i=0; i<m_nParamSize; i++) {
 		m_histSquareGrad[i] += grad[i] * grad[i];
 		m_mapHistSquareGrad[rank][i] = m_histSquareGrad[i] - m_mapHistSquareGrad[rank][i];
-		params[i] -= m_learningRate * grad[i] / sqrt(m_mapHistSquareGrad[rank][i]);
+		params[i] -= m_learningRate * grad[i] / sqrt(m_mapHistSquareGrad[rank][i] + 0.1f);
 	}
 	printInfo(m_mapHistSquareGrad[rank]);
 	memcpy(m_mapHistSquareGrad[rank], m_histSquareGrad, sizeof(float) * m_nParamSize);
