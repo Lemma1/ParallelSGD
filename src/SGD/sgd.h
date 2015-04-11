@@ -61,6 +61,25 @@ private:
 };
 
 /****************************************************************
+* DELAYED ADAGRAD
+****************************************************************/
+class delayedAdagrad: public sgdBase
+{
+public:
+    delayedAdagrad(ConfReader *confReader, int paramSize);
+    ~delayedAdagrad();
+
+    /* data */
+
+    /* method */
+    void updateParams (float *params, float *grad, int rank);
+
+private:
+    /* data */
+    float *m_histSquareGrad;
+};
+
+/****************************************************************
 * ADADELTA
 ****************************************************************/
 class adadelta: public sgdBase

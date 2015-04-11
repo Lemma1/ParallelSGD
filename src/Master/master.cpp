@@ -81,6 +81,12 @@ sgdBase * initSgdSolver (ConfReader *confReader, int paramSize) {
             printf("Init kernel adadelta solver.\n");
             break;
         }
+        // delayed adagrad
+        case 5: {
+            sgdSolver = new delayedAdagrad(confReader, paramSize);
+            printf("Init delayed adagrad solver.\n");
+            break;
+        }
         default: {
             printf("Error solver type.\n");
             exit(-1);
