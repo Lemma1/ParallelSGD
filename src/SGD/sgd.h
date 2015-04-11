@@ -77,6 +77,7 @@ public:
 private:
     /* data */
     float *m_histSquareGrad;
+    std::map<int, float*> m_mapHistSquareGrad;    
 };
 
 /****************************************************************
