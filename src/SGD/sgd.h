@@ -71,6 +71,7 @@ public:
     ~delayedAdagrad();
 
     /* data */
+    int m_nSlave;
 
     /* method */
     void updateParams (float *params, float *grad, int rank);
