@@ -16,12 +16,10 @@ futureAdagrad::futureAdagrad (ConfReader *confReader, int paramSize) {
     MPI_Comm_size(MPI_COMM_WORLD, &nProc);
     m_nSlave = nProc - 1;
 
-    for (int i=1; i<=m_nSlave; ++i) {
+    for (int rank=1; rank<=m_nSlave; ++rank) {
     	float *histSquareGrad = new float [m_nParamSize];
-    	for (int j=0; j<m_nParamSize; j++) {
-			histSquareGrad[j] = 0.1f;
-		}
-    	m_mapHistSquareGrad[i] = histSquareGrad;
+    	memset(histSquareGrad, 0x00, sizeof(float) * m_nParamSize);
+    	m_mapHistSquareGrad[rank] = histSquareGrad;
     }
 }
 
