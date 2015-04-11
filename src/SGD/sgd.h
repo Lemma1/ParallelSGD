@@ -90,6 +90,27 @@ private:
 };
 
 /****************************************************************
+* Future ADAGRAD
+****************************************************************/
+class futureAdagrad: public sgdBase
+{
+public:
+    futureAdagrad(ConfReader *confReader, int paramSize);
+    ~futureAdagrad();
+
+    /* data */
+    int m_nSlave;
+
+    /* method */
+    void updateParams (float *params, float *grad, int rank);
+
+private:
+    /* data */
+    float *m_histSquareGrad;
+    std::map<int, float*> m_mapHistSquareGrad;    
+};
+
+/****************************************************************
 * ADADELTA
 ****************************************************************/
 class adadelta: public sgdBase

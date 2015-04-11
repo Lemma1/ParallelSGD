@@ -5,7 +5,7 @@
 
 class Chameleon {
     public:
-	  Chameleon() {};
+	  	Chameleon() {};
 	    explicit Chameleon(const std::string&);
 	    explicit Chameleon(double);
 	    explicit Chameleon(const char*);

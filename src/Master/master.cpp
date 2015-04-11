@@ -87,6 +87,12 @@ sgdBase * initSgdSolver (ConfReader *confReader, int paramSize) {
             printf("Init delayed adagrad solver.\n");
             break;
         }
+        // future adagrad
+        case 6: {
+            sgdSolver = new futureAdagrad(confReader, paramSize);
+            printf("Init future adagrad solver.\n");
+            break;
+        }
         default: {
             printf("Error solver type.\n");
             exit(-1);
