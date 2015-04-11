@@ -29,7 +29,7 @@ VPATH = $(SRCDIR) \
 
 # src files
 SRCS=\
-	parallelSGD.cpp \
+	$(SRCDIR)/parallelSGD.cpp \
 	$(SRCDIR)/Config/Chameleon.cpp \
 	$(SRCDIR)/Config/ConfigFile.cpp \
 	$(SRCDIR)/Config/confreader.cpp \
