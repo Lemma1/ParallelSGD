@@ -41,6 +41,7 @@ SRCS=\
 	adagrad.cpp \
 	adadelta.cpp \
 	kernel_adadelta.cpp \
+	delayed_adagrad.cpp \
 	rmsprop.cpp \
 	master.cpp \
 	slave.cpp \
