@@ -9,7 +9,7 @@
 class sgdBase
 {
 public:
-    sgdBase() {m_stepCount = 0;};
+    sgdBase() {};
     virtual ~sgdBase() {};
 
     /* data */
