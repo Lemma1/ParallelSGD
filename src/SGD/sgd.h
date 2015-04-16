@@ -9,7 +9,7 @@
 class sgdBase
 {
 public:
-    sgdBase() {};
+    sgdBase() {m_stepCount = 0;};
     virtual ~sgdBase() {};
 
     /* data */
@@ -22,6 +22,7 @@ protected:
     int m_useMomentum;
     int m_nParamSize;
     float m_learningRate;
+    int m_stepCount;
 
     /* method */
     //TODO void truncate (float);
