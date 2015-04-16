@@ -32,6 +32,7 @@ void adagrad::updateParams (float *params, float *grad, int rank) {
 		sum += sqrt(m_histSquareGrad[i]);
 	}
 	m_stepCount += 1;
+	printf("step[%d]: %f\n", m_stepCount, sum);
 	
 	for (int i=0; i<m_nParamSize; i++) {
 		params[i] -= m_learningRate * grad[i] * sum / (sqrt(m_histSquareGrad[i]) * sqrt(sqrt(m_stepCount)));
