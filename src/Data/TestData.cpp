@@ -5,9 +5,9 @@
 
 TestData::TestData()
 {
-    numFet = 3; 
-    numData = 100;
-    dataName = "TestData.bin";
+    numFet = 1000; 
+    numData = 10000;
+    dataName = "HardLinear.bin";
     dataVector = new float[numData * (numFet + 1)];
     loadData();
 }
