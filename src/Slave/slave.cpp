@@ -60,19 +60,19 @@ DataFactory* initDataFactory(ConfReader *slaveConf)
     {
 	//linear data
 	case 1: 
-	    {	
+	    {
 		printf("Slave Data: Init Linear Data.\n");
 		data = new TestData();
         break;
 	    }
 	case 2: 
-	    {	
+	    {
 		printf("Slave Data: Init Minst Data.\n");
 		data = new Mnist(1);
         break;
 	    }
 	case 3: 
-	    {	
+	    {
 		printf("Slave Data: Init Binary Data.\n");
 		data = new BinaryData();
         break;

@@ -28,11 +28,9 @@ float linearReg::computeGrad (float *grad, float *params, float *data, float *la
 		predict = 0.f;
 		for (int dim=0; dim<m_nParamSize; dim++) {
 			predict += params[dim] * data[dataOffset + dim];
-			printf("%d,%d:%f\n",sample, dim, data[dataOffset + dim]);
 		}
 
 		diff = predict - label[sample];
-		printf("%f,%f\n",label[sample], predict);
 		for (int dim=0; dim<m_nParamSize; dim++) {
 			grad[dim] += data[dataOffset + dim] * diff;
 		}
@@ -45,6 +43,7 @@ float linearReg::computeGrad (float *grad, float *params, float *data, float *la
 	for (int dim=0; dim<m_nParamSize; dim++) {
 		grad[dim] /= f_minibatchSize;
 	}
+	printf("Linear Regression Error: %f\n", cost);
 
 	return cost;
 }
@@ -52,7 +51,7 @@ float linearReg::computeGrad (float *grad, float *params, float *data, float *la
 void linearReg::initParams (float *params) {
 	srand (time(NULL));
 	for (int i=0; i<m_nParamSize; i++) {
-        params[i] = SYM_UNIFORM_RAND;
+        params[i] = 0;//SYM_UNIFORM_RAND;
     }
 }
 
