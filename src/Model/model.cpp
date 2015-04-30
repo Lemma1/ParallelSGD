@@ -102,6 +102,7 @@ float softmax::computeGrad (float *grad, float *params, float *data, float *labe
 
 		//**** compute prob = <W, x> + b ****//
 		dataOffset = sample * m_inputSize;
+		float maxProb = -1.f;
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
 			// non-bias terms
 			for (int dim=0; dim<m_inputSize; ++dim) {
@@ -109,14 +110,16 @@ float softmax::computeGrad (float *grad, float *params, float *data, float *labe
 			}
 			// bias terms
 			m_prob[classIdx] += params[m_classNum*m_inputSize+classIdx];
-			// printf("m_prob[%d]: %f\n", classIdx, m_prob[classIdx]);
+			if (m_prob[classIdx] > maxProb) {
+			 	maxProb = m_prob[classIdx];
+			}
 		}
 		
 		//**** compute prob = exp(<W, x> + b) / sum(exp(<W, x> + b))) ****//
 		float sumProb = 0.f;
 		// compute prob = exp(<W, x> + b), sumProb = sum(exp(<W, x> + b))
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
-			m_prob[classIdx] = exp(m_prob[classIdx]);
+			m_prob[classIdx] = exp(m_prob[classIdx]-maxProb);
 			sumProb += m_prob[classIdx];
 			// printf("m_prob[%d]: %f, sumProb: %f\n", classIdx, m_prob[classIdx], sumProb);
 		}		
