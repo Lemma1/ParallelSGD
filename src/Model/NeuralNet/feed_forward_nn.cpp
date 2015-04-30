@@ -301,7 +301,7 @@ float feedForwardNN::computeGrad (float *grad, float *params, float *data, float
 			if (m_softmaxLayer->m_activation[i] > maxP) {
 				maxP = m_softmaxLayer->m_activation[i];
 				maxIndex = i;
-			}			
+			}
 		}
 		if (maxIndex == labelInt) {
 			correctCount ++;

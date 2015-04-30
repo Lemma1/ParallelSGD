@@ -11,11 +11,6 @@
 #include "confreader.h"
 #include "Mnist.h"
 #include "binary.h"
-/*
-#include "../Model/model.h"
-#include "../Data/TestData.h"
-#include "../Data/DataFactory.h"
-*/
 
 //#define DEBUG_SLAVE
 
@@ -159,7 +154,7 @@ void slaveDo(){
 
         /*step 5: calculate the grad*/        
         float cost = model->computeGrad(grad, param, data, label);
-        // printf("MASTER: check grad\n");
+        // printf("Slave[%d] cost: %f\n", rank, cost);
         // for (int i = 0; i < paramSize; i++) {
         //     printf("%f\t", grad[i]);
         // }

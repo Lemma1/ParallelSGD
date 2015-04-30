@@ -62,7 +62,7 @@ all : parallelSGD
 
 # run the program
 run : parallelSGD
-	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 20 parallelSGD
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 2 parallelSGD
 
 # compile main program parallelSGD from all objs 
 parallelSGD: $(OBJS)

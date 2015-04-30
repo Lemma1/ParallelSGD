@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "confreader.h"
 
@@ -31,6 +32,7 @@ public:
 	~linearReg ();
 
 	/* data */
+	int m_inputSize;
 
 	/* method */
 	float computeGrad (float *grad, float *params, float *data, float *label);
@@ -44,10 +46,14 @@ public:
 	~softmax ();
 
 	/* data */
-	int m_nClassNum;
+	int m_inputSize;
+	int m_classNum;
+	float *m_prob;
+	float *m_oneOnlabel;
 
 	/* method */
 	float computeGrad (float *grad, float *params, float *data, float *label);
+	void initParams (float *params);
 };
 
 #endif
