@@ -5,8 +5,8 @@
 
 TestData::TestData()
 {
-    numFet = 1000; 
-    numData = 10000;
+    numFet = 4000; 
+    numData = 4000;
     dataName = "HardLinear.bin";
     dataVector = new float[numData * (numFet + 1)];
     loadData();
