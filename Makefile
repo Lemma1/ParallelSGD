@@ -44,6 +44,7 @@ SRCS=\
 	$(SRCDIR)/SGD/kernel_adadelta.cpp \
 	$(SRCDIR)/SGD/delayed_adagrad.cpp \
 	$(SRCDIR)/SGD/future_adagrad.cpp \
+	$(SRCDIR)/SGD/delayed_adadelta.cpp \
 	$(SRCDIR)/SGD/rmsprop.cpp \
 	$(SRCDIR)/Master/master.cpp \
 	$(SRCDIR)/Slave/slave.cpp \
