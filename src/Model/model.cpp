@@ -61,7 +61,7 @@ void linearReg::initParams (float *params) {
 
 softmaxReg::softmaxReg (ConfReader *confReader, int minibatchSize) {	
 	m_inputSize = confReader->getInt("input size");
-	m_classNum = confReader->getInt("softmaxReg class num");
+	m_classNum = confReader->getInt("softmax class num");
 	m_nMinibatchSize = minibatchSize;
 	m_prob = new float [m_classNum];
 	m_oneOnlabel = new float[m_classNum];
