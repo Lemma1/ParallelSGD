@@ -184,4 +184,30 @@ private:
     float *m_meanSquareGrad;    
 };
 
+/****************************************************************
+* delayed ADADELTA
+****************************************************************/
+class DelayedAdadelta: public sgdBase
+{
+public:
+    DelayedAdadelta(ConfReader *confReader, int paramSize);
+    ~DelayedAdadelta();
+
+    /* data */
+
+    /* method */
+    void updateParams (float *params, float *grad, int rank);
+
+private:
+    /* data */
+    int m_numSlave;
+    float m_decayFactor;
+    float m_stableConst;
+
+    float *m_ESquareGrad;
+    float *m_ESquareDelta;
+
+    std::map<int, float*> m_mapHistSquareGrad;
+    std::map<int, float*> m_mapHistSquareDelta;
+};
 #endif
