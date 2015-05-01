@@ -2,6 +2,7 @@
 #define __NEURAL_NET_H__
 
 #include <vector>
+#include "matrix.h"
 #include "model.h"
 #include "layer.h"
 

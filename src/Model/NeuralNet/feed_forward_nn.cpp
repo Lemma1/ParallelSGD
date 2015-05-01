@@ -94,6 +94,7 @@ layerBase *feedForwardNN::initLayer (int numNeuron, int layerType) {
 }
 
 void feedForwardNN::initParams (float *params) {
+	srand (time(NULL));
 	// Initialize values for weights
 	float *cursor = params;
 	for (int connectIdx=0; connectIdx<m_numLayer-1; ++connectIdx) {
@@ -148,20 +149,24 @@ void feedForwardNN::feedForward (float *input) {
 		// create ptr to associated forwardInfo & clean the buffer
 		forwarInfo = m_vecForwardInfo[connectIdx];
 		memset(forwarInfo, 0x00, sizeof(float)*m_numNeuronList[connectIdx+1]);
+	
+		// // matrix computation
+		dot(forwarInfo, weights, fanOut, fanIn-1, inLayer->m_activation, fanIn-1, 1);
+		elem_accum(forwarInfo, weights + fanOut*(fanIn-1), fanOut);
 
-		// compute forwarInfo 		
-		for (int in=0; in<fanIn-1; in++) {			
-			float inAct = inLayer->m_activation[in];
-			int wIdx = in * fanOut;
-			for (int out=0; out<fanOut; out++) {
-				forwarInfo[out] += inAct * weights[wIdx+out];
-			}
-		}
-		// bias term
-		int wIdx = (fanIn-1) * fanOut;
-		for (int out=0; out<fanOut; out++) {
-			forwarInfo[out] += weights[wIdx+out];
-		}
+		// compute forwarInfo
+		// for (int in=0; in<fanIn-1; in++) {
+		// 	float inAct = inLayer->m_activation[in];
+		// 	int wIdx = in * fanOut;
+		// 	for (int out=0; out<fanOut; out++) {
+		// 		forwarInfo[out] += inAct * weights[wIdx+out];
+		// 	}
+		// }
+		// // bias term
+		// int wIdx = (fanIn-1) * fanOut;
+		// for (int out=0; out<fanOut; out++) {
+		// 	forwarInfo[out] += weights[wIdx+out];
+		// }
 
 		// outLayer compute activation
 		outLayer->activateFunc(forwarInfo);
@@ -211,29 +216,33 @@ void feedForwardNN::backProp (float *target) {
 		memset(backpropInfo, 0x00, sizeof(float)*m_numNeuronList[connectIdx]);
 
 		// compute weightsGrad
-		// printf("compute weightsGrad\n");
-		for (int in=0; in<fanIn-1; in++) {
-			float inAct = inLayer->m_activation[in];
-			int wIdx = in * fanOut;
-			for (int out=0; out<fanOut; out++) {
-				weightsGrad[wIdx+out] += inAct * outLayer->m_delta[out];
-			}
-		}
-		// weightsGrad for bias term
-		// printf("weightsGrad for bias term\n");
-		int wIdx = (fanIn-1) * fanOut;
-		for (int out=0; out<fanOut; out++) {
-			weightsGrad[wIdx+out] += outLayer->m_delta[out];
-		}
+		outer(weightsGrad, outLayer->m_delta, fanOut, inLayer->m_activation, fanIn-1);
+		elem_accum(weightsGrad + fanOut * (fanIn-1), outLayer->m_delta, fanOut);
+
+		// // printf("compute weightsGrad\n");
+		// for (int in=0; in<fanIn-1; in++) {
+		// 	float inAct = inLayer->m_activation[in];
+		// 	int wIdx = in * fanOut;
+		// 	for (int out=0; out<fanOut; out++) {
+		// 		weightsGrad[wIdx+out] += inAct * outLayer->m_delta[out];
+		// 	}
+		// }
+		// // weightsGrad for bias term
+		// // printf("weightsGrad for bias term\n");
+		// int wIdx = (fanIn-1) * fanOut;
+		// for (int out=0; out<fanOut; out++) {
+		// 	weightsGrad[wIdx+out] += outLayer->m_delta[out];
+		// }
 		
 		// compute backpropInfo
-		// printf("compute backpropInfo\n");
-		for (int in=0; in<fanIn-1; in++) {
-			int wIdx = in * fanOut;
-			for (int out=0; out<fanOut; out++) {
-				backpropInfo[in] += weights[wIdx+out] * outLayer->m_delta[out];
-			}
-		}
+		trans_dot(backpropInfo, weights, fanOut, fanIn-1, outLayer->m_delta, fanOut, 1);
+		// // printf("compute backpropInfo\n");
+		// for (int in=0; in<fanIn-1; in++) {
+		// 	int wIdx = in * fanOut;
+		// 	for (int out=0; out<fanOut; out++) {
+		// 		backpropInfo[in] += weights[wIdx+out] * outLayer->m_delta[out];
+		// 	}
+		// }
 
 		// non-input inLayer computeDelta
 		if (connectIdx > 0) {
