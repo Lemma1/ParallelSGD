@@ -8,6 +8,7 @@
 #include "model.h"
 #include "svm.h"
 #include "neural_net.h"
+#include "rnn_translator.h"
 
 // #define DEBUG_MASTER
 
@@ -24,7 +25,7 @@ modelBase * initModelMaster (ConfReader *modelConf, int validBatchSize) {
         // softmax regression
         case 1: { 
             printf("Model: Init softmax regression.\n");
-            model = new softmax(modelConf, validBatchSize);
+            model = new softmaxReg(modelConf, validBatchSize);
             break;
         }
         // SVM
@@ -39,6 +40,12 @@ modelBase * initModelMaster (ConfReader *modelConf, int validBatchSize) {
             model = new feedForwardNN(modelConf, validBatchSize);
             break;
         }
+        // LSTM Translator
+        case 4: {
+            printf("Slave Model: Init LSTM Translator.\n");
+            model = new RNNTranslator(modelConf, validBatchSize);
+            break;
+        }            
         default: {
             printf("Error model type.\n");
             exit(-1);
@@ -119,7 +126,7 @@ void masterFunc () {
     ConfReader *modelConf = new ConfReader("config.conf", "Model");
     modelBase *model = initModelMaster(modelConf, validBatchSize);
     int paramSize = model->m_nParamSize;
-    printf("paramSize: %d\n", paramSize);    
+    printf("paramSize: %d\n", paramSize);
 
     // Step 1.3: Allocate master memory
     float *params = new float[paramSize];
@@ -175,17 +182,7 @@ void masterFunc () {
     while (nSend < nSendMax) {        
         MPI_Recv(grad, paramSize, MPI_FLOAT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);        
         nRecv++;
-        // printf("MASTER: check recv grad\n");
-        // for (int i = 0; i < paramSize; i++) {
-        //     printf("%f\t", grad[i]);
-        // }
-        // printf("\n");
-    	// Call solver to update params
-        // printf("MASTER: check grad\n");
-        // for (int i = 0; i < paramSize; i++) {
-        //     printf("%f\t", grad[i]);
-        // }
-        // printf("\n");
+        
     	sgdSolver->updateParams(params, grad, status.MPI_SOURCE);
 
         // Check recv tag (eg. local new epoch info)

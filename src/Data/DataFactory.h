@@ -8,16 +8,20 @@
 class DataFactory
 {
     public:
-	DataFactory();
-	//DataFactory(int);
-	virtual int getNumberOfData() {return 0;};
-	virtual void printOutData() {};
-	virtual void getDataBatch(float*, float*, int*, int) {};
+		DataFactory();
+		//DataFactory(int);
+		virtual int getNumberOfData() {return 0;};
+		
+		virtual int getDataSize() {return 0;};
+		virtual int getLabelSize() {return 0;};
+
+		virtual void printOutData() {};
+		virtual void getDataBatch(float*, float*, int*, int) {};
     protected:
-	int numFet;
-	int numData;
-	std::string dataName;
-	virtual float getDataByIndex(int,int) {return 0.0;};
+		int numFet;
+		int numData;
+		std::string dataName;
+		virtual float getDataByIndex(int,int) {return 0.0;};
 };
 
 #endif

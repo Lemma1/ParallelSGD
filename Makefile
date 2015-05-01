@@ -1,19 +1,24 @@
 # dirs
 OBJDIR=objs
 SRCDIR=src
+LIBDIR=lib
+ROOTDIR=$(shell pwd)
 
 # compiler
 CXX=mpic++
 MPIRUN=mpirun
 
 # compile flags
-CXXFLAGS+=-O3 #-std=c++0x
+CXXFLAGS+=-O3#-std=c++0x
 
 # include flags
 INCFLAGS+=$(foreach d, $(VPATH), -I$d)
+INCFLAGS+=-I$(LIBDIR)/openblas/include
 
 # link flags
-LDFLAGS+=-lpthread -lmpi -lmpi_cxx
+LDFLAGS+=-lpthread -lmpi -lmpi_cxx -lopenblas
+LDFLAGS+=-L$(LIBDIR)/
+LDFLAGS+=-L$(LIBDIR)/openblas/lib
 
 # vpath
 VPATH = $(SRCDIR) \
@@ -22,6 +27,10 @@ VPATH = $(SRCDIR) \
 	$(SRCDIR)/Master \
 	$(SRCDIR)/Model \
 	$(SRCDIR)/Model/NeuralNet \
+	$(SRCDIR)/Model/RNN/connection \
+	$(SRCDIR)/Model/RNN/helper \
+	$(SRCDIR)/Model/RNN/layer \
+	$(SRCDIR)/Model/RNN/network \
 	$(SRCDIR)/SGD \
 	$(SRCDIR)/Slave \
 
@@ -37,6 +46,7 @@ SRCS=\
 	$(SRCDIR)/Data/TestData.cpp \
 	$(SRCDIR)/Data/Mnist.cpp \
 	$(SRCDIR)/Data/binary.cpp \
+	$(SRCDIR)/Data/sequence_data.cpp \
 	$(SRCDIR)/Model/model.cpp \
 	$(SRCDIR)/SGD/sgd.cpp \
 	$(SRCDIR)/SGD/adagrad.cpp \
@@ -49,6 +59,16 @@ SRCS=\
 	$(SRCDIR)/Slave/slave.cpp \
 	$(SRCDIR)/Model/NeuralNet/layer.cpp \
 	$(SRCDIR)/Model/NeuralNet/feed_forward_nn.cpp \
+	$(SRCDIR)/Model/RNN/connection/rnn_connection.cpp \
+	$(SRCDIR)/Model/RNN/helper/matrix.cpp \
+	$(SRCDIR)/Model/RNN/helper/nonlinearity.cpp \
+	$(SRCDIR)/Model/RNN/layer/rnn_layer.cpp \
+	$(SRCDIR)/Model/RNN/layer/rnn_input_layer.cpp \
+	$(SRCDIR)/Model/RNN/layer/rnn_mse_layer.cpp \
+	$(SRCDIR)/Model/RNN/layer/rnn_softmax_layer.cpp \
+	$(SRCDIR)/Model/RNN/layer/lstm_layer.cpp \
+	$(SRCDIR)/Model/RNN/network/rnn_lstm.cpp \
+	$(SRCDIR)/Model/RNN/network/rnn_translator.cpp \
 	$(SRCDIR)/Model/svm.cpp 
 
 # obj files using patsubst matching
@@ -62,7 +82,7 @@ all : parallelSGD
 
 # run the program
 run : parallelSGD
-	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 2 parallelSGD
+	LD_LIBRARY_PATH=./$(LIBDIR):./$(LIBDIR)/openblas/lib:$(LD_LIBRARY_PATH) $(MPIRUN) -np 2 parallelSGD
 
 # compile main program parallelSGD from all objs 
 parallelSGD: $(OBJS)

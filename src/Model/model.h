@@ -10,11 +10,13 @@
 
 #define SYM_UNIFORM_RAND (2 * ((float) rand() / (RAND_MAX)) - 1)   // rand float in [-1, 1]
 
+using namespace std;
+
 class modelBase
 {
 public:
 	modelBase(){};
-	~modelBase(){};
+	virtual ~modelBase(){};
 
 	/* data */
 	int m_nParamSize;
@@ -39,11 +41,11 @@ public:
 	void initParams (float *params);
 };
 
-class softmax: public modelBase
+class softmaxReg: public modelBase
 {
 public:
-	softmax (ConfReader *confReader, int minibatchSize);
-	~softmax ();
+	softmaxReg (ConfReader *confReader, int minibatchSize);
+	~softmaxReg ();
 
 	/* data */
 	int m_inputSize;
