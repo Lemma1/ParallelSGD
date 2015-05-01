@@ -29,6 +29,14 @@ int Mnist::getNumberOfData(){
     return numData;
 }
 
+int Mnist::getDataSize() {
+    return 28*28;
+}
+
+int Mnist::getLabelSize() {
+    return 1;
+}
+
 float Mnist::getDataByIndex(int dataIndex, int fetIndex)
 {
    return(dataVector[ dataIndex * (numFet+1) + fetIndex ]);
@@ -55,7 +63,7 @@ void Mnist::loadData(){
             else{
                 mnFer.read(reinterpret_cast<char*>(&temp8),sizeof(char));
                 temp = temp8;
-                dataVector[i*(numFet+1)+j] =(temp);
+                dataVector[i*(numFet+1)+j] =(temp/255.f);
             }
         }
     }

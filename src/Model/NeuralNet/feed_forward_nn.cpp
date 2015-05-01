@@ -311,7 +311,7 @@ float feedForwardNN::computeGrad (float *grad, float *params, float *data, float
 		dataCursor += dataDim;		
 	}
 	printf("Error: %f\n", error / m_nMinibatchSize);
-	printf("Correct rate: %f\n", correctCount / m_nMinibatchSize);
+	printf("Correct rate: %d/%d=%f\n", int(correctCount), m_nMinibatchSize, correctCount / float(m_nMinibatchSize));
 
 	for (int dim=0; dim<m_nParamSize; ++dim) {
 		grad[dim] /= m_nMinibatchSize;

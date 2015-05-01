@@ -56,12 +56,12 @@ void linearReg::initParams (float *params) {
 }
 
 /****************************************************************
-* Method definition for Softmax Classification
+* Method definition for softmaxReg Classification
 ****************************************************************/
 
-softmax::softmax (ConfReader *confReader, int minibatchSize) {	
+softmaxReg::softmaxReg (ConfReader *confReader, int minibatchSize) {	
 	m_inputSize = confReader->getInt("input size");
-	m_classNum = confReader->getInt("softmax class num");
+	m_classNum = confReader->getInt("softmaxReg class num");
 	m_nMinibatchSize = minibatchSize;
 	m_prob = new float [m_classNum];
 	m_oneOnlabel = new float[m_classNum];
@@ -69,19 +69,19 @@ softmax::softmax (ConfReader *confReader, int minibatchSize) {
 	printf("%d,%d,%d\n", m_inputSize, m_classNum, m_nParamSize);
 }
 
-softmax::~softmax () {
+softmaxReg::~softmaxReg () {
 	if (m_prob != NULL) delete [] m_prob;
 	if (m_oneOnlabel != NULL) delete [] m_oneOnlabel;
 }
 
-void softmax::initParams (float *params) {
+void softmaxReg::initParams (float *params) {
 	srand (time(NULL));
 	for (int i=0; i<m_nParamSize; i++) {
         params[i] = 0.000001 * SYM_UNIFORM_RAND;
     }
 }
 
-float softmax::computeGrad (float *grad, float *params, float *data, float *label) {
+float softmaxReg::computeGrad (float *grad, float *params, float *data, float *label) {
 	// Init variables
 	float crossEntropy = 0.f;
 	float correctCount = 0.f;
@@ -106,7 +106,7 @@ float softmax::computeGrad (float *grad, float *params, float *data, float *labe
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
 			// non-bias terms
 			for (int dim=0; dim<m_inputSize; ++dim) {
-				m_prob[classIdx] += params[classIdx*m_inputSize+dim] * data[dataOffset+dim] / 255;
+				m_prob[classIdx] += params[classIdx*m_inputSize+dim] * data[dataOffset+dim];
 			}
 			// bias terms
 			m_prob[classIdx] += params[m_classNum*m_inputSize+classIdx];
@@ -134,7 +134,7 @@ float softmax::computeGrad (float *grad, float *params, float *data, float *labe
 			float diff = m_prob[classIdx] - m_oneOnlabel[classIdx];
 			// non-bias terms
 			for (int dim=0; dim<m_inputSize; ++dim) {
-				grad[classIdx*m_inputSize+dim] += data[dataOffset + dim] / 255 * diff;
+				grad[classIdx*m_inputSize+dim] += data[dataOffset + dim] * diff;
 			}
 			// bias terms
 			grad[m_classNum*m_inputSize+classIdx] += diff;
@@ -165,7 +165,7 @@ float softmax::computeGrad (float *grad, float *params, float *data, float *labe
 	}
 
 	printf("Cross Entropy Error: %f\n", crossEntropy);
-	printf("Correct rate: %f\n", correctCount / m_nMinibatchSize);
+	printf("Correct rate: %d/%d=%f\n", int(correctCount), m_nMinibatchSize, correctCount / float(m_nMinibatchSize));
 
 	return crossEntropy;
 }

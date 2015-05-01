@@ -15,6 +15,9 @@ class Mnist:public DataFactory{
          Mnist(int);
          ~Mnist();
          int getNumberOfData();
+         int getDataSize();
+         int getLabelSize();
+
          void getDataBatch(float*,float*,int*,int);
 
          //for test&debug
