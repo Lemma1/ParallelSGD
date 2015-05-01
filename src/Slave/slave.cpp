@@ -132,7 +132,7 @@ void slaveDo(){
 		/*step 2:receive from master*/
 		MPI_Recv(param,paramSize,MPI_FLOAT,ROOT,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
         count++;
-        // printf("%d:%d\n", rank, count);
+        //printf("%d:%d\n", rank, count);
         
 		/*step 3: check whether ends*/
 		if(status.MPI_TAG == STOPTAG){
@@ -144,15 +144,13 @@ void slaveDo(){
             std::random_shuffle(index,index+dbSize);
             indexI = 0;
         }
-        
         for(int i=0;i<batchSize;i++){
             pickIndex[i] = index[indexI];
             indexI++;
         }        
         dataset->getDataBatch(label, data, pickIndex, batchSize);        
         //dataset->printOutData();
-
-        /*step 5: calculate the grad*/        
+        /*step 5: calculate the grad*/      
         float cost = model->computeGrad(grad, param, data, label);
         // printf("Slave[%d] cost: %f\n", rank, cost);
         // for (int i = 0; i < paramSize; i++) {
@@ -160,7 +158,6 @@ void slaveDo(){
         // }
         // printf("\n");
         // printf("SLAVE[%d]: %f\n", rank, cost);
-        
         /*step 6: return to master*/
         MPI_Send(grad, paramSize, MPI_FLOAT, ROOT, rank, MPI_COMM_WORLD);
 	}
