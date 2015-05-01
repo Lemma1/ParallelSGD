@@ -167,15 +167,14 @@ void slaveDo(){
         /*step 5: calculate the grad*/      
         float cost = model->computeGrad(grad, param, data, label);
         // printf("Slave[%d] cost: %f\n", rank, cost);
-<<<<<<< HEAD
+
         // for (int i = 0; i < paramSize; i++) {
         //     printf("%f\t", grad[i]);
         // }
         // printf("\n");
         // printf("SLAVE[%d]: %f\n", rank, cost);
-=======
+
         
->>>>>>> 2a686cf567fee26b42ecc90ead110b5fbcec3d38
         /*step 6: return to master*/
         MPI_Send(grad, paramSize, MPI_FLOAT, ROOT, rank, MPI_COMM_WORLD);
 	}
