@@ -89,6 +89,7 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 	float correctCount = 0.f;
 	int dataOffset;
 	int labelInt;
+	float maxProb;
 	memset(grad, 0x00, sizeof(float) * m_nParamSize);
 	memset(m_prob, 0x00, sizeof(float) * m_classNum);
 
@@ -105,7 +106,7 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 
 		//**** compute prob = <W, x> + b ****//
 		dataOffset = sample * m_inputSize;
-		float maxProb = FLT_MIN;
+		maxProb = -FLT_MAX;
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
 			// non-bias terms
 			for (int dim=0; dim<m_inputSize; ++dim) {
@@ -123,6 +124,7 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 			if (m_prob[classIdx] > maxProb) {
 			 	maxProb = m_prob[classIdx];
 			}
+			//printf("maxPorb=%f, m_prob[%d] = %f\n", maxProb,classIdx, m_prob[classIdx]);
 		}
 
 		//**** compute prob = exp(<W, x> + b) / sum(exp(<W, x> + b))) ****//

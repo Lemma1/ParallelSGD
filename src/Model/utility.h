@@ -13,6 +13,7 @@ float fdivide(float *up, float *low)
 	{
 		//printf("%f\n", low);
 		printf("Warning: zero valued delimiters.\n");
+		exit(-1);
 		*low = 1;
 	}
 	return *up / *low;
