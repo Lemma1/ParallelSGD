@@ -3,6 +3,7 @@ OBJDIR=objs
 SRCDIR=src
 LIBDIR=lib
 ROOTDIR=$(shell pwd)
+UNAME=$(shell uname)
 
 # compiler
 CXX=mpic++
@@ -10,6 +11,9 @@ MPIRUN=mpirun
 
 # compile flags
 CXXFLAGS+=-O3#-std=c++0x
+ifeq ($(UNAME), Linux)
+    CXXFLAGS+=-mavx
+endif
 
 # include flags
 INCFLAGS+=$(foreach d, $(VPATH), -I$d)
