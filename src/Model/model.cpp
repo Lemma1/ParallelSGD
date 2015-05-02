@@ -1,6 +1,8 @@
 #include "model.h"
-#include <time.h>
+#include "utility.h"
 
+#include <time.h>
+#include <cfloat>
 /****************************************************************
 * Method definition for Linear Regression
 ****************************************************************/
@@ -97,12 +99,13 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 		labelInt = (int)label[sample];
 		if (labelInt < 0) {
 			labelInt = 0;
+			printf("Warning: labelInt is negative.\n");
 		}
 		m_oneOnlabel[labelInt] = 1.f;
 
 		//**** compute prob = <W, x> + b ****//
 		dataOffset = sample * m_inputSize;
-		float maxProb = -1.f;
+		float maxProb = FLT_MIN;
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
 			// non-bias terms
 			for (int dim=0; dim<m_inputSize; ++dim) {
@@ -126,23 +129,16 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 		float sumProb = 0.f;
 		// compute prob = exp(<W, x> + b), sumProb = sum(exp(<W, x> + b))
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
-			m_prob[classIdx] = exp(m_prob[classIdx]-maxProb);
+			//printf("m_prob[%d]: %f, sumProb: %f\n", classIdx, m_prob[classIdx]-maxProb, sumProb);
+			m_prob[classIdx] = fexp(m_prob[classIdx]-maxProb);
 			sumProb += m_prob[classIdx];
 			//printf("m_prob[%d]: %f, sumProb: %f\n", classIdx, m_prob[classIdx], sumProb);
 		}
-		if (sumProb <= 0.000001)
-		{
-			
-		}	
+
 		// normalize prob = prob ./ sumProb
 		//printf("%f\n", sumProb);
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
-			if (sumProb <= 0.000001) {
-				m_prob[classIdx] = 1.f / m_classNum;
-			}
-			else {
-				m_prob[classIdx] /= sumProb;
-			}
+			m_prob[classIdx] = fdivide(&(m_prob[classIdx]), &sumProb);
 			// if (m_prob[classIdx] != m_prob[classIdx])
 			// {
 			// 	printf("Wrong at 2\n");
@@ -165,11 +161,11 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 
 			// error
 			//printf("%d:%f\n", sample,m_prob[classIdx]);
-			crossEntropy -= m_oneOnlabel[classIdx] * log(m_prob[classIdx] + 0.000001);
+			crossEntropy -= fmutiplelog(m_oneOnlabel[classIdx] , m_prob[classIdx]);
 		}
 
 		// compute some statistics
-		float maxP = 0.f;
+		float maxP = -100.f;
 		int maxIndex = -1;
 		for (int i=0; i<m_classNum; i++) {
 			if (m_prob[i] > maxP) {
@@ -177,6 +173,7 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 				maxIndex = i;
 			}
 		}
+		//printf("%d vs %d\n", maxIndex, labelInt);
 		if (maxIndex == labelInt) {
 			correctCount ++;
 		}
@@ -194,3 +191,4 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 
 	return crossEntropy;
 }
+
