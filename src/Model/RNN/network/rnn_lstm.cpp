@@ -97,10 +97,10 @@ RecurrentLayer *RNN_LSTM::initLayer(int layerIdx) {
 		}
 		layer = new LSTMLayer(numNeuron, m_maxSeqLen, inputSize);
 	} else if (layerType == "softmax_layer") {
-		m_errorType = "cross_entropy_error";
+		m_taskType = "classification";
 		layer = new RNN_SoftmaxLayer(numNeuron, m_maxSeqLen);
 	} else if (layerType == "mse_layer") {
-		m_errorType = "mean_squared_error";
+		m_taskType = "regression";
 		layer = new RNN_MSELayer(numNeuron, m_maxSeqLen);
 	} else {		
 		exit(-1);
@@ -146,9 +146,9 @@ float RNN_LSTM::computeError(float *sampleTarget, int inputSeqLen) {
 	RecurrentLayer *curLayer = m_vecLayers[m_numLayer-1];
 	for (int seqIdx=1; seqIdx<=inputSeqLen; ++seqIdx) {
 		for (int i=0; i<m_outputSize; ++i) {
-			if (m_errorType == "cross_entropy_error") {
+			if (m_taskType == "classification") {
 				sampleError += targetCursor[i] * log(curLayer->m_outputActs[seqIdx][i]);
-			} else if (m_errorType == "mean_squared_error") {
+			} else if (m_taskType == "regression") {
 				float diff = targetCursor[i] - curLayer->m_outputActs[seqIdx][i];
 				sampleError += diff * diff;
 			}

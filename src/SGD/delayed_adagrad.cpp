@@ -40,6 +40,5 @@ void delayedAdagrad::updateParams (float *params, float *grad, int rank) {
 		m_mapHistSquareGrad[rank][i] += grad[i] * grad[i];
 		params[i] -= m_learningRate * grad[i] / sqrt(m_mapHistSquareGrad[rank][i]);
 	}
-	printInfo(m_mapHistSquareGrad[rank]);
 	memcpy(m_mapHistSquareGrad[rank], m_histSquareGrad, sizeof(float) * m_nParamSize);
 }

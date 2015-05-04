@@ -28,9 +28,7 @@ public:
 	int m_maxSeqLen;
 
 	int m_inputSize;
-	int m_outputSize;
-
-	string m_errorType;
+	int m_outputSize;	
 
 	int *m_numNeuronList;
 	string *m_layerTypeList;

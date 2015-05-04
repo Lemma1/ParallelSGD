@@ -1,4 +1,5 @@
 #include "model.h"
+#include "float.h"
 #include <time.h>
 
 /****************************************************************
@@ -102,7 +103,7 @@ float softmaxReg::computeGrad (float *grad, float *params, float *data, float *l
 
 		//**** compute prob = <W, x> + b ****//
 		dataOffset = sample * m_inputSize;
-		float maxProb = -1.f;
+		float maxProb = -FLT_MIN;
 		for (int classIdx=0; classIdx<m_classNum; ++classIdx) {
 			// non-bias terms
 			for (int dim=0; dim<m_inputSize; ++dim) {
