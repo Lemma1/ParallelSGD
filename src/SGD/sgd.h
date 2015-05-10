@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <map>
 #include <mpi.h>
+#include <math.h>
 #include "confreader.h"
 
 class sgdBase
